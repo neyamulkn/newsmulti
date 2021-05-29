@@ -14,7 +14,7 @@ class CreateDeshjuresTable extends Migration
     public function up()
     {
         Schema::create('deshjures', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->char('name_bd', 25);
             $table->char('name_en', 25);
             $table->char('slug_bd', 25);

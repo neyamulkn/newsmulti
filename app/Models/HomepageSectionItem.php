@@ -15,10 +15,10 @@ class HomepageSectionItem extends Model
     }
 
 	public function newsByCategory(){
-        return $this->hasMany(News::class, 'category','item_id')->where('lang',  1);
+        return $this->hasMany(News::class, 'category','item_id')->where('lang',  'bd');
     }   
     public function englishNewsByCategory(){
-        return $this->hasMany(News::class, 'category','item_id')->where('lang', '!=', 1);
+        return $this->hasMany(News::class, 'category','item_id')->where('lang', '!=', 'bd');
     }
 
     public function getCategories(){

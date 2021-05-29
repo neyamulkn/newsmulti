@@ -32,7 +32,7 @@ class CommentController extends Controller
             $perPage = $request->show;
         }
         $get_comments = $get_comments->orderBy('comments.id', 'desc')->selectRaw('comments.*, news.news_title, news.news_slug')->paginate($perPage);
-        return view('backend.comments')->with(compact('get_comments'));
+        return view('backend.comment.comments')->with(compact('get_comments'));
     }
 
     public function commentUpdate(Request $request){

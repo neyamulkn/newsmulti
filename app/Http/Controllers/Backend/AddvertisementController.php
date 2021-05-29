@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\Addvertisement;
+use App\Models\Page;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,15 +11,28 @@ use Illuminate\Support\Facades\Auth;
 class AddvertisementController extends Controller
 {
 
-    public function index(){
-        $advertisements = Addvertisement::orderBy('id', 'DESC')->get();
-        return view('backend.addvertisement-list')->with(compact('advertisements'));
+    public function index(Request $request){
+        $advertisements = Addvertisement::orderBy('id', 'DESC');
+        if($request->title){
+            $advertisements->where('ads_name', 'LIKE', '%'. $request->title .'%');
+        }
+        if($request->adsType && $request->adsType != 'all'){
+            $advertisements->where('adsType', $request->adsType);
+        }if($request->page_name && $request->page_name != 'all'){
+            $advertisements->where('page', $request->page_name);
+        }
+        if($request->status && $request->status != 'all'){
+            $advertisements->where('status', $request->status);
+        }
+        $perPage = 15;
+        if($request->show){
+            $perPage = $request->show;
+        }
+        $advertisements = $advertisements->paginate($perPage);
+        $pages = Page::where('status', 1)->get();
+        return view('backend.addvertisement.addvertisement-list')->with(compact('advertisements', 'pages'));
     }
  
-    public function create()
-    {
-        return view('backend.addvertisement');
-    }
 
     public function store(Request $request)
     {
@@ -51,17 +65,18 @@ class AddvertisementController extends Controller
             'status' => ($request->status) ? '1' : '0',
         ];
         $insert = Addvertisement::create($data);
-        Toastr::success('Addvertisement Created Successfully.');
+        Toastr::success('Addvertisement Created Successful.');
         return back();
     }
 
     public function edit($id)
     {  
         $data = Addvertisement::find($id);
-        return view('backend.addvertisement-edit')->with(compact('data'));
+        $pages = Page::where('status', 1)->get();
+        return view('backend.addvertisement.addvertisement-edit')->with(compact('data', 'pages'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
 
         $request->validate([
@@ -71,7 +86,7 @@ class AddvertisementController extends Controller
         ]);
 
 
-        $updated_by = Auth::user()->id;
+        $updated_by = Auth::guard('admin')->id();
 
         $data = [
             'ads_name' => $request->ads_name,
@@ -103,8 +118,8 @@ class AddvertisementController extends Controller
             $data = array_merge(['image' => $image_name], $data );
         }
 
-        $insert = Addvertisement::where('id', $id)->update($data);
-        Toastr::success('Addvertisement updated Successfully.');
+        $insert = Addvertisement::where('id', $request->id)->update($data);
+        Toastr::success('Addvertisement updated Successful.');
         return back();
     }
 

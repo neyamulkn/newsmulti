@@ -1,10 +1,10 @@
     @extends('frontend.layouts.master')
-    @section('title'){{$get_news->news_title}} | {{ ($get_news->subcategory) ? $get_news->subcategoryList->subcategory_bd. " | " : ''}} {{$get_news->categoryList->category_bd}} | বিডি টাইপ
+    @section('title'){{$get_news->news_title}} | {{ ($get_news->subcategory) ? $get_news->subcategoryList->subcategory_bd. " | " : ''}} {{$get_news->categoryList->category_bd}} | {{Config::get('siteSetting.title')}}
     @endsection
     @section('MetaTag')
         <meta name="keywords" content="{{ $get_news->keywords }}" />
         <!-- Schema.org for Google -->
-        <meta itemprop="name" content="{{$get_news->news_title}} | {{ ($get_news->subcategory) ? $get_news->subcategoryList->subcategory_bd. " | " : ''}} {{$get_news->categoryList->category_bd}} | বিডি টাইপ">
+        <meta itemprop="name" content="{{$get_news->news_title}} | {{ ($get_news->subcategory) ? $get_news->subcategoryList->subcategory_bd. " | " : ''}} {{$get_news->categoryList->category_bd}} | {{Config::get('siteSetting.site_name')}}">
         <meta itemprop="description" content="{{Str::limit(strip_tags($get_news->news_dsc), 200)}}">
         <meta itemprop="image" content="@if($get_news->image){{asset('upload/images/watermark/'.$get_news->image->source_path) }}@endif">
 
@@ -20,7 +20,7 @@
 
 
         <!-- Open Graph general (Facebook, Pinterest & Google+) -->
-        <meta property="og:title" content="{{$get_news->news_title}} | {{ ($get_news->subcategory) ? $get_news->subcategoryList->subcategory_bd. " | " : ''}} {{$get_news->categoryList->category_bd}} | বিডি টাইপ">
+        <meta property="og:title" content="{{$get_news->news_title}} | {{ ($get_news->subcategory) ? $get_news->subcategoryList->subcategory_bd. " | " : ''}} {{$get_news->categoryList->category_bd}} |  {{Config::get('siteSetting.site_name')}}">
         <meta property="og:description" content="{{Str::limit(strip_tags($get_news->news_dsc), 100)}}">
         <meta property="og:image" content="@if($get_news->image){{asset('upload/images/watermark/'.$get_news->image->source_path) }}@endif" />
         <meta property="og:url" content="{{ url()->full() }}">
@@ -42,7 +42,7 @@
     @endsection
 
     @section('css')
-    <link rel="stylesheet" href="{{asset('frontend')}}/css/toastr.css">
+    
     <style type="text/css">
         .single-post-box .post-gallery img {
           /*  width: initial !important; */
@@ -167,7 +167,7 @@
 
                                     <h1>{{$get_news->news_title}}</h1>
                                     <ul class="post-tags">
-                                        <li><i class="fa fa-user"></i>by <a href="{{route('reporter_details', $get_news->reporter->username)}}">{{$get_news->reporter->name}}</a></li>
+                                        <li><i class="fa fa-user"></i>by <a href="{{route('reporter.publicProfile', $get_news->reporter->username)}}">{{$get_news->reporter->name}}</a></li>
                                         <li><i class="fa fa-calendar" aria-hidden="true"></i>{{banglaDate($get_news->publish_date)}} <i class="fa fa-clock-o"></i> {{Carbon\Carbon::parse($get_news->publish_date)->diffForHumans()}}</li>
 
                                         <li><a href="#"><i class="fa fa-comments-o"></i><span>{{$comments->total()}}</span></a></li>
@@ -197,7 +197,7 @@
                                         </video>
                                         @endforeach
                                     @else
-                                        <img title="{{$get_news->title}}" src="@if($get_news->image) {{asset('upload/images/'.$get_news->image->source_path)}} @endif">
+                                        <img title="{{$get_news->title}}" src="@if($get_news->image) {{asset('upload/images/news/'.$get_news->image->source_path)}} @endif">
                                         <span class="image-caption">@if($get_news->image) {{$get_news->image->title}} @endif</span>
                                     @endif
                                 </div>
@@ -208,22 +208,34 @@
                                     <span title="Reset font size" id="linkReset" ><i class="fa fa-undo" aria-hidden="true"></i></span>
                                 </div>
                                 <div class="post-content news_dsc" id="divContent">
-                                    {!! $get_news->news_dsc !!}
+                                @php 
+
+                                $ads = $get_ads->toArray();
+                                $adNo = 0; $contentBlock = explode("</p>", $get_news->news_dsc); @endphp
+                                @foreach($contentBlock as $index => $content)
+                                    
+                                    {!! $content  !!}
+
+                                    @if(($index+1) % 2 == 0 && $adNo < count($ads))
+                                        <div class="advertisement">
+                                            <div class="desktop-advert">
+                                                {!! $ads[$adNo]['add_code'] !!}
+                                            </div>
+                                        </div>
+                                        @php $adNo++; @endphp
+                                    @endif
+                                       
+                                @endforeach
                                 </div>
-                                <!-- <div class="post-tags-box">
+                                <div class="post-tags-box">
                                     <ul class="tags-box">
                                         <li><i class="fa fa-tags"></i><span>Tags:</span></li>
                                         @foreach(explode(',', $get_news->keywords) as $keyword)
                                             <li><a href="#">{{$keyword}}</a></li>
                                         @endforeach
                                     </ul>
-                                </div> -->
-                                <div class="advertisement">
-                                    <div class="desktop-advert">
-                                        {!! $middleOfNews !!}
-                                    </div>
-                                    
                                 </div>
+                                
                                 
                                 <!-- comment area box -->
                                 <div class="comment-area-box">
@@ -246,7 +258,7 @@
                                             <li id="singleComment{{ $comment->id }}" style="background: #f7f7f7">
                                                 <div class="comment-box">
                                                     <a href="{{route('user_profile', [$comment->user->username])}}">
-                                                    <img alt="" src="{{ asset('upload/images/users/thumb_image/'. $comment->user->image) }}"></a>
+                                                    <img alt="" src="{{ asset('upload/images/users/thumb_image/'. $comment->user->photo) }}"></a>
                                                     <div class="comment-content">
                                                         <h4><a style="float: left;border:none;" href="{{route('user_profile', [$comment->user->username])}}">{{$comment->user->name}}</a> <a @guest class="log-in-popup" href="#log-in-popup" @else onclick="reply_field('{{$comment->id}}', 'reply_form')"  @endguest style="cursor: pointer;" ><i class="fa fa-comment-o"></i>Reply</a></h4>
                                                         <span><i class="fa fa-clock-o"></i>{{Carbon\Carbon::parse($comment->created_at)->diffForHumans()}}</span>
@@ -282,7 +294,7 @@
                                                             @if($replyComment->user)
                                                             <li id="singleComment{{ $replyComment->id }}" style="background: #fff;">
                                                                 <div class="comment-box" style="margin: 0px;">
-                                                                    <a  href="{{route('user_profile', [$replyComment->user->username])}}"><img alt="" src="{{asset('upload/images/users/thumb_image/'.$replyComment->user->image)}}"></a>
+                                                                    <a  href="{{route('user_profile', [$replyComment->user->username])}}"><img alt="" src="{{asset('upload/images/users/thumb_image/'.$replyComment->user->photo)}}"></a>
                                                                     <div class="comment-content">
                                                                         <h4><a style="float: left; border:none;" href="{{route('user_profile', [$replyComment->user->username])}}">{{$replyComment->user->name}} </a></h4>
                                                                         <span><i class="fa fa-clock-o"></i>{{ Carbon\Carbon::parse($replyComment->created_at)->diffForHumans()}}</span>
@@ -356,7 +368,7 @@
                                             <div class="col-md-3 col-sm-4 col-xs-6">
                                                 <div class="news-post standard-post2">
                                                     <div class="post-gallery">
-                                                        <img src="{{ asset('upload/images/thumb_img/'. $news->image->source_path)}}" alt="">
+                                                       @if($news->image) <img src="{{ asset('upload/images/thumb_img/'. $news->image->source_path)}}" alt="">@endif
                                                     </div>
                                                     <div class="post-title">
                                                         <h2><a href="{{route('news_details', $news->news_slug)}}">{{Str::limit($news->news_title, 40)}} </a></h2>
@@ -410,11 +422,6 @@
             </div>
         </section>
         <!-- End block-wrapper-section -->
-
-    @endsection
-
-    @section('js')
-
         <!-- Contents of log in popup-->
         <div id="log-in-popup" class="mfp-hide white-popup">
             <form action="{{ route('userlogin') }}" method="post" class="login-form">
@@ -516,63 +523,56 @@
             </form>
         </div>
 
-        <script src="{{ asset('frontend/js/toastr.js') }}"></script>
+@endsection
 
-        {!! Toastr::message() !!}
-        <script>
+@section('js')
 
-            @if($errors->any())
-                @foreach($errors->all() as $error)
-                    toastr.error("{{ $error }}");
-                @endforeach
-            @endif
+    <script type="text/javascript">
 
-            @if(Session::get('submitType'))
-             $("#log-in-popup").click();
-            @endif
-        </script>
-            <script type="text/javascript">
-
-                function readLater(news_id){
-
-                    $.ajax({
-                        url:'{{route("readLater")}}',
-                        type:'GET',
-                        data:{news_id:news_id},
-                        success:function(response){
-                           toastr.success(response);
-                        }
-                    });
+        function readLater(news_id){
+           
+            $.ajax({
+                url:'{{route("addedReadLater")}}',
+                type:'GET',
+                data:{news_id:news_id},
+                success:function(response){
+                     alert(response);
+                   toastr.success(response);
                 }
+            });
+        }
 
-                $('#linkIncrease').click(function () {
-                    modifyFontSize('increase');
-                });
+        $('#linkIncrease').click(function () {
+            modifyFontSize('increase');
+        });
 
-                $('#linkDecrease').click(function () {
-                    modifyFontSize('decrease');
-                });
+        $('#linkDecrease').click(function () {
+            modifyFontSize('decrease');
+        });
 
-                $('#linkReset').click(function () {
-                    modifyFontSize('reset');
-                })
+        $('#linkReset').click(function () {
+            modifyFontSize('reset');
+        })
 
-                function modifyFontSize(flag) {
+        function modifyFontSize(flag) {
                     var divElement = $('#divContent');
                     var currentFontSize = parseInt(divElement.css('font-size'));
-                    if (flag == 'increase')
+                    if (flag == 'increase'){
                         currentFontSize += 2;
-                    else if (flag == 'decrease')
+                    }
+                    else if (flag == 'decrease'){
                         currentFontSize -= 2;
-                    else
+                    }
+                    else{
                         currentFontSize = 16;
+                    }
                     divElement.css('font-size', currentFontSize);
-                    $('p').css('font-size', currentFontSize);
-                }
+                    $('#divContent p').css('font-size', currentFontSize);
+        }
 
 
         /// comment
-         $(function(){
+        $(function(){
                 $("#comment").submit(function(event){
                     event.preventDefault();
                   
@@ -588,15 +588,15 @@
 
                     });
                 });
-            });  
+        });  
 
-            function reply_field(com_id, type, id=''){
-                //when click reply btn hide edit from 
-                $("#comment_edit"+com_id).html('');
-                $("#update_replyComment"+id).html('');
+        function reply_field(com_id, type, id=''){
+            //when click reply btn hide edit from 
+            $("#comment_edit"+com_id).html('');
+            $("#update_replyComment"+id).html('');
 
-                document.getElementById(type+com_id+id).innerHTML = '@csrf  <input type="hidden" name="news_id" value="{{ $get_news->id }}"> <textarea name="reply_comment" class="reply-box" rows="1" required  placeholder="মন্তব্য লেখুন.."></textarea><button  onclick="replyformSubmit('+com_id+', \''+type+'\', '+id+')"  type="submit"  style="float: right;">Reply</button>'
-            }  
+            document.getElementById(type+com_id+id).innerHTML = '@csrf  <input type="hidden" name="news_id" value="{{ $get_news->id }}"> <textarea name="reply_comment" class="reply-box" rows="1" required  placeholder="মন্তব্য লেখুন.."></textarea><button  onclick="replyformSubmit('+com_id+', \''+type+'\', '+id+')"  type="submit"  style="float: right;">Reply</button>'
+        }  
 
         function comment_edit(id){
             //when click edit btn hide reply from 
@@ -667,7 +667,7 @@
         }
 
 
-            //comment delete
+        //comment delete
         function commentDelete(com_id){
             if(confirm("Are you sure delete comment")){
                 $.ajax({
@@ -691,6 +691,6 @@
 
         }
 
-        </script>
+</script>
 
-    @endsection
+@endsection

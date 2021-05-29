@@ -8,34 +8,7 @@
     <title>@yield('title')</title>
 	@yield('MetaTag')
 	<!--rss -->
-	<link rel="alternate" type="application/rss+xml" title="বিডি টাইপ RSS" href="{{ route('feed') }}" />
-    <script type="application/ld+json">
-	{
-	"@context": "https://schema.org",
-	"name":"বিডি টাইপ",
-	"@type": "Organization",
-	"url": "{{url('/')}}",
-	"logo": "{{ asset('frontend')}}/images/logo-black.png",
-	"contactPoint" : [
-		{
-			"@type" : "ContactPoint",
-			"telephone" : "+8801572023023",
-			"email" : "bdtype@gmail.com",
-			"contactType" : "customer service"
-		}
-	],
-	"sameAs" : [
-		"https://facebook.com/bdtype",
-		"https://twitter.com/bdtype",
-		"https://youtube.com/bdtype",
-		"https://pinterest.com/bdtype",
-		"https://plus.google.com/+bdtype",
-		"https://instagram.com/bdtype"
-		"https://bdtype.com/rss/rss.xml"
-	]
-	}
-    </script>
-
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="{{ route('feed') }}" />
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
@@ -62,14 +35,13 @@
 	<link rel="stylesheet" type="text/css" href="{{asset('frontend/css/custom.css') }}" media="screen">
 	<link rel="stylesheet" type="text/css" href="{{asset('frontend/css/leftsidebar-mobile.css') }}" media="screen">
 	<link href="{{asset('frontend/css/search/main.css')}}" rel="stylesheet" />
-	
+	<link rel="stylesheet" href="{{asset('frontend')}}/css/toastr.css">
 	@yield('css')
 	<style type="text/css">
 		.map img{ width: 100%; height: 100%; object-fit: contain; }	
 	</style>
-	<script type="text/javascript">
-	{!! config('siteSetting.google_adsense') !!}
-	</script>
+  {!! config('siteSetting.google_adsense') !!}
+  {!! config('siteSetting.header') !!}
 </head>
 <body>
 
@@ -92,8 +64,18 @@
 	<script type="text/javascript" src="{{ asset('frontend/js/owl.carousel.min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('frontend/js/plugins-scroll.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('frontend/js/script.js') }}"></script>
-    <script type="text/javascript"> {!!  config('siteSetting.google_analytics') !!} </script>
+	    <script src="{{ asset('frontend/js/toastr.js') }}"></script>
+
+    {!! config('siteSetting.google_analytics') !!}
+  	{!! config('siteSetting.footer') !!}
+
+  	{!! Toastr::message() !!}
 	<script type="text/javascript">
+		     @if($errors->any())
+            @foreach($errors->all() as $error)
+                toastr.error("{{ $error }}");
+            @endforeach
+        @endif
 	function search_bar(src_key){
 
 		if(src_key != ''){

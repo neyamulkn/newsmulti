@@ -35,7 +35,7 @@
 						<div class="col-md-8">
 							<div class="widget posts-widget">
 								<h1 style="color:#4CEFB3;border-bottom: 1px solid #4CEFB3">{{$_SERVER['SERVER_NAME']}} magazine is the next generation media</h1>
-								<p style="color:{{config('siteSetting.footer_text_color')}}">{!! config('siteSetting.footer') !!}</p>					
+								<p style="color:{{config('siteSetting.footer_text_color')}}">{!! config('siteSetting.about') !!}</p>					
 							</div>
 						</div>
 					

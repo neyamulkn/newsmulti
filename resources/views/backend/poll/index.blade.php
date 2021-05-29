@@ -7,6 +7,7 @@
 
 @endsection
 @section('css')
+   
     <link href="{{asset('backend/assets')}}/node_modules/dropify/dist/css/dropify.min.css" rel="stylesheet" type="text/css" />
     <style type="text/css">
         .asColorPicker_open{z-index: 9999999}
@@ -160,6 +161,8 @@
                                                         </button>
                                                         <div class="dropdown-menu">
                                                             
+                                                            <button class="dropdown-item" type="button" onclick="seePollResult('{{$poll->id}}')" class="btn btn-info btn-sm"><i class="ti-eye" aria-hidden="true"></i> See Result</button>
+
                                                             <button  class="dropdown-item" type="button" onclick="edit('{{$poll->id}}')"  data-toggle="modal" data-target="#edit" class="btn btn-info btn-sm"><i class="ti-pencil" aria-hidden="true"></i> Edit</button>
                                                             
                                                             <button  class="dropdown-item" title="Delete" data-target="#delete" onclick="deleteConfirmPopup('{{route("admin.poll.delete", $poll->id)}}')" class="btn btn-danger btn-sm" data-toggle="modal"><i class="ti-trash" aria-hidden="true"></i> Delete</button>
@@ -189,6 +192,25 @@
         </div>
         <!-- ============================================================== -->
         <!-- End Page wrapper  -->
+
+        <!-- poll result Modal -->
+        <div class="modal fade" id="pollResullModal" role="dialog" style="display: none;">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Poll Result</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card-body"  id="showPollResult"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>        
 
         <!-- update Modal -->
         <div class="modal fade" id="edit" role="dialog" style="display: none;">
@@ -291,9 +313,9 @@
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-12">
-                                            <div class="row form-group ">
-                                                <span class="col-12">Write Options</span> 
-                                                <div class="col-11"> <input type="text" class="form-control"  name="options[]"  placeholder="Enter option"> </div>  <div class="col-1"><button class="btn btn-success" type="button" onclick="pollOption();"><i class="fa fa-plus"></i></button></div>
+                                            <div class="row">
+                                                <span class="col-12">Write Poll Options</span> 
+                                                <div class="col-11  form-group "> <input type="text" class="form-control"  name="options[]"  placeholder="Enter option"> </div>  <div class="col-1"><button class="btn btn-success" type="button" onclick="pollOption();"><i class="fa fa-plus"></i></button></div>
                                             </div>
                                             <div id="pollOption"></div>
                                             <div class="row justify-content-md-center"><div class="col-md-8"> <span  style="margin-top: 10px; cursor: pointer;" class="btn btn-info btn-sm" onclick="pollOption()"><i class="fa fa-plus"></i> Add More Option </span></div>
@@ -346,6 +368,25 @@
                 },
                 // $ID Error display id name
                 @include('common.ajaxError', ['ID' => 'edit_form'])
+            });
+
+        }        
+
+        function seePollResult(id){
+            $('#pollResullModal').modal('show');
+            $('#showPollResult').html('<div class="loadingData"></div>');
+            var  url = '{{route("admin.poll.result", ":id")}}';
+            url = url.replace(':id',id);
+            $.ajax({
+                url:url,
+                method:"get",
+                success:function(data){
+                    if(data){
+                        $("#showPollResult").html(data);
+                    }
+                },
+                // $ID Error display id name
+                @include('common.ajaxError', ['ID' => 'showPollResult'])
             });
 
         }

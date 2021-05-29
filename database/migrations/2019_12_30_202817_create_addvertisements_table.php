@@ -14,7 +14,7 @@ class CreateAddvertisementsTable extends Migration
     public function up()
     {
         Schema::create('addvertisements', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->char('ads_name', 255)->nullable();
             $table->char('adsType', 25);
             $table->char('page', 25);
@@ -23,9 +23,9 @@ class CreateAddvertisementsTable extends Migration
             $table->text('clickBtn')->nullable();
             $table->text('image')->nullable();
             $table->text('add_code')->nullable();
-            $table->text('status');
-            $table->tinyInteger('created_by')->nullable();
-            $table->tinyInteger('updated_by')->nullable();
+            $table->integer('impressions')->default(0);
+            $table->integer('views')->default(0);
+            $table->tinyInteger('status');
             $table->timestamps();
         });
     }

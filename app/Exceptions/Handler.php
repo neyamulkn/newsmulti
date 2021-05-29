@@ -70,11 +70,11 @@ class Handler extends ExceptionHandler
             case 'admin':
                 $login = 'adminLoginForm';
                 break;
-            case 'vendor':
-                $login = 'vendorLoginForm';
+            case 'reporter':
+                $login = 'reporterLogin';
                 break;
             case 'staff':
-                $login = 'staffLoginForm';
+                $login = 'staffLogin';
                 break;
             default:
                 $login = 'login';

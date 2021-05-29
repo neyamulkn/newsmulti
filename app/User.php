@@ -43,7 +43,15 @@ class User extends Authenticatable
         return $this->hasOne(Reporter::class);
     }
 
+    public function reporter(){
+        return $this->hasOne(Reporter::class);
+    }
+
     public function news(){
         return $this->belongsTo(News::class);
+    }
+
+    public function allnews(){
+        return $this->hasMany(News::class, 'user_id');
     }
 }

@@ -22,19 +22,19 @@ class AdminController extends Controller
 	    $admin_id  = Auth::id();
 	    $request->validate([
 	        'name' => 'required',
-	        'phone' => ['required','unique:users,phone,'.$admin_id],
+	        'mobile' => ['required','unique:users,mobile,'.$admin_id],
 	        'email' => ['email','unique:users,email,'.$admin_id],
         ]);
 
 	    $profile = User::find($admin_id);
         $profile->name = $request->name;
-        $profile->phone = $request->phone;
+        $profile->mobile = $request->mobile;
         $profile->email = $request->email;
 
         if ($request->hasFile('image')) {
             //delete image from folder
-            $image_path = public_path('upload/images/users/thumb_image/'. $profile->image);
-            if(file_exists($image_path) && $profile->image){
+            $image_path = public_path('upload/images/users/thumb_image/'. $profile->photo);
+            if(file_exists($image_path) && $profile->photo){
                 unlink($image_path);
             }
             $image = $request->file('image');
@@ -44,7 +44,7 @@ class AdminController extends Controller
             $image_resize = Image::make($image);
             $image_resize->resize(250, 250);
             $image_resize->save($image_path);
-            $profile->image = $new_image_name;
+            $profile->photo = $new_image_name;
         }
         $profile->save();
 	    Toastr::success('Profile update success');

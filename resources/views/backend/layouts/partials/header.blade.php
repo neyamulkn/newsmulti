@@ -1,18 +1,16 @@
-<header class="topbar"><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<header class="topbar" style="background:{{ config('siteSetting.header_bg_color') }}; color: {{ config('siteSetting.header_text_color')}}"><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <nav class="navbar top-navbar navbar-expand-md navbar-dark">
         <!-- ============================================================== -->
         <!-- Logo -->
         <!-- ============================================================== -->
         <div class="navbar-header">
             <a target="_blank" class="navbar-brand" href="{{route('home')}}">
-                <!-- Logo icon --><b>
-                    <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
-                    <!-- Dark Logo icon -->
-                    <img src="{{ asset('upload/images/logo/'.config('siteSetting.footer_logo'))}}" width="65%" alt="homepage" class="dark-logo" />
-                    <!-- Light Logo icon -->
-                    <img src="{{ asset('upload/images/logo/'.config('siteSetting.footer_logo'))}}" width="65%" alt="homepage" class="light-logo" />
-                </b>
-                <!--End Logo icon -->
+               
+            <b><img  src="{{ asset('upload/images/logo/'.config('siteSetting.favicon'))}}" alt="homepage" class="light-logo" />
+            </b><span>
+             <!-- Light Logo text -->    
+             <img src="{{ asset('upload/images/logo/'.config('siteSetting.logo'))}}" width="150" class="light-logo" alt="homepage" /></span> 
+            <!--End Logo icon -->
             </a>
         </div>
         <!-- ============================================================== -->
@@ -61,7 +59,7 @@
                                         @if($notification->type == env('NEWS'))
                                         @if($notification->news)
                                             <a onclick="readNotify('{{$notification->id}}')" @if($notification->news->status == 1) href="{{route('news.list')}}" @elseif($notification->news->status == 2) href="{{route('news.list', 2)}}" @else  href="{{route('news.list', 0)}}" @endif>
-                                                <div class="user-img"> <img src="{{asset('upload/images/users/thumb_image/'.$notification->user->image)}}" alt="user" class="img-circle"></div>
+                                                <div class="user-img"> <img src="{{asset('upload/images/users/thumb_image/'.$notification->user->photo)}}" alt="user" class="img-circle"></div>
                                                 <div class="mail-contnet">
                                                     <h5>{{$notification->user->username}}</h5> <span class="mail-desc"><strong>{{$notification->notify}} </strong> - {{Str::limit($notification->news->news_title, 20)}}</span> <span class="time">{{$notification->created_at->diffForHumans()}}</span>
                                                 </div>
@@ -72,7 +70,7 @@
                                         @if($notification->type == env('COMMENT'))
                                            @if($notification->comment && $notification->comment->news)
                                             <a onclick="readNotify('{{$notification->id}}')"  href="{{route('comments',$notification->comment->news->news_slug)}}#singleComment{{$notification->item_id}}">
-                                                <div class="user-img"> <img src="{{asset('upload/images/users/thumb_image/'.$notification->user->image)}}" alt="user" class="img-circle"></div>
+                                                <div class="user-img"> <img src="{{asset('upload/images/users/thumb_image/'.$notification->user->photo)}}" alt="user" class="img-circle"></div>
                                                 <div class="mail-contnet">
                                                     <h5>{{$notification->user->username}}</h5> <span class="mail-desc"><strong>{{$notification->notify}} </strong> - {{Str::limit($notification->comment->comments, 20)}}</span> <span class="time">{{$notification->created_at->diffForHumans()}}</span> </div>
                                             </a>
@@ -81,13 +79,13 @@
 
                                         @if($notification->type == env('REPORTER_NOTIFY'))
                                             @if($notification->user)
-                                                @if(Auth::user()->role_id != env('ADMIN'))
+                                                @if(Auth::guard('admin')->user()->role_id != env('ADMIN'))
                                                 <a onclick="readNotify('{{$notification->id}}')" href="{{route('user_profile', $notification->user->username)}}">
                                                 @endif
-                                                @if(Auth::user()->role_id == env('ADMIN'))
+                                                @if(Auth::guard('admin')->user()->role_id == env('ADMIN'))
                                                 <a onclick="readNotify('{{$notification->id}}')" href="{{route('reporterRequest.list')}}">
                                                 @endif
-                                                <div class="user-img"> <img src="{{asset('upload/images/users/thumb_image/'.$notification->user->image)}}" alt="user" class="img-circle"></div>
+                                                <div class="user-img"> <img src="{{asset('upload/images/users/thumb_image/'.$notification->user->photo)}}" alt="user" class="img-circle"></div>
                                                 <div class="mail-contnet">
                                                     <h5>{{$notification->user->username}}</h5> <span class="mail-desc"><strong>{{$notification->notify}} </strong> </span> <span class="time">{{$notification->created_at->diffForHumans()}}</span>
                                                 </div>
@@ -111,21 +109,19 @@
                 <!-- User Profile -->
                 <!-- ============================================================== -->
                 <li class="nav-item dropdown u-pro">
-                    <a class="nav-link dropdown-toggle waves-effect waves-dark profile-pic" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="{{asset('upload/images/users/thumb_image/'. Auth::user()->image)}}" alt="user" class=""> <span class="hidden-md-down"> &nbsp;<i class="fa fa-angle-down"></i></span> </a>
+                    <a class="nav-link dropdown-toggle waves-effect waves-dark profile-pic" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="{{asset('upload/images/users/thumb_image/'. Auth::guard('admin')->user()->photo)}}" alt="user" class=""> <span class="hidden-md-down"> &nbsp;<i class="fa fa-angle-down"></i></span> </a>
                     <div class="dropdown-menu dropdown-menu-right animated flipInY">
                         <!-- text-->
-                        <a href="javascript:void(0)" class="dropdown-item"><i class="ti-user"></i> My Profile</a>
+                        <a href="{{route('admin.profileUpdate')}}" class="dropdown-item"><i class="ti-user"></i> My Profile</a>
                         <!-- text-->
                         <a href="{{route('admin.passwordChange')}}" class="dropdown-item"><i class="ti-wallet"></i> Password Change</a>
                      
-                        <a href="javascript:void(0)" class="dropdown-item"><i class="ti-settings"></i> Setting</a>
-                        <!-- text-->
-                        <div class="dropdown-divider"></div>
-                        <!-- text-->
-                        <a  href="{{ route('logout') }}" onclick="event.preventDefault();
+                        <a href="{{route('generalSetting')}}" class="dropdown-item"><i class="ti-settings"></i> Setting</a>
+                       
+                        <a  href="javascript:void(0)" onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();" class="dropdown-item"><i class="fa fa-power-off"></i> Logout</a>
                         <!-- text-->
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        <form id="logout-form" action="{{ route('adminLogout') }}" method="POST" style="display: none;">
                             @csrf
                         </form>
                     </div>

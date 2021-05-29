@@ -49,7 +49,7 @@
         <!-- footer -->
         <!-- ============================================================== -->
         <footer class="footer">
-            Copyright © 2020 BDtype.com. All Rights Reserved.
+           {!! config('siteSetting.copyright_text') !!}
         </footer>
 
         <!-- End footer -->

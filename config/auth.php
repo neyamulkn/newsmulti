@@ -57,12 +57,12 @@ return [
             'provider' => 'users',
         ],
 
-        'vendor' => [
+        'reporter' => [
             'driver' => 'session',
             'provider' => 'users',
         ],
 
-        'vendor-api' => [
+        'reporter-api' => [
             'driver' => 'token',
             'provider' => 'users',
         ],
@@ -116,9 +116,9 @@ return [
             'model' => App\Admin::class,
         ],
 
-        'vendors' => [
+        'reporters' => [
             'driver' => 'eloquent',
-            'model' => App\Vendor::class,
+            'model' => App\reporter::class,
         ],
 
          'staffs' => [

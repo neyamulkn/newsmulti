@@ -1,27 +1,33 @@
 <?php
+
+use Illuminate\Support\Facades\Route;
+
 Route::get('kalamadmin', 'UserAdminController@login')->name('admin');
+Route::get('/login', 'Backend\AdminLoginController@LoginForm')->name('adminLoginForm');
+Route::post('/login', 'Backend\AdminLoginController@login')->name('adminLogin');
+Route::get('/register', 'Backend\AdminLoginController@RegisterForm')->name('adminRegisterForm');
+Route::post('/register', 'Backend\AdminLoginController@register')->name('adminRegister');
+Route::post('/logout', 'Backend\AdminLoginController@logout')->name('adminLogout');
 
-Route::group(['prefix' => 'dashboard', 'middleware' => ['auth','adminPermission'], 'namespace' => 'Backend'], function(){
+route::get('message/{username?}', 'MessageController@message')->name('messageAdmin');
 
-	Route::get('/', 'DashboardController@dashboard')->name('dashboard');
+Route::group(['middleware' => 'auth:admin', 'namespace' => 'Backend'], function(){
 
-		//setting
+	Route::get('/', 'DashboardController@dashboard')->name('admin.dashboard');
+
+	//setting
 	Route::get('general/setting', 'GeneralSettingController@generalSetting')->name('generalSetting');
 	Route::post('general/setting/update/{id}', 'GeneralSettingController@generalSettingUpdate')->name('generalSettingUpdate');
 
 	Route::get('logo/setting', 'GeneralSettingController@logoSetting')->name('logoSetting');
 	Route::post('logo/setting/update/{id}', 'GeneralSettingController@logoSettingUpdate')->name('logoSettingUpdate');
+	Route::match(['get', 'post'], 'google/setting', 'GeneralSettingController@googleSetting')->name('googleSetting');
+	Route::match(['get', 'post'], 'google/recaptcha', 'SiteSettingController@google_recaptcha')->name('google_recaptcha');
+	Route::match(['get', 'post'], 'seo/setting', 'GeneralSettingController@seoSetting')->name('seoSetting');
+	Route::post('sitemap/setting','SitemapController@sitemapSetting')->name('sitemapSetting');
 
-	Route::get('google/setting', 'GeneralSettingController@googleSetting')->name('googleSetting');
-	Route::get('social/login/setting', 'SocialController@socialLoginSetting')->name('socialLoginSetting');
-	Route::post('social/login/setting/update/{id}', 'SocialController@socialLoginSettingUpdate')->name('socialLoginSettingUpdate');
-
-	Route::get('social/setting', 'SocialController@socialSetting')->name('socialSetting');
-	Route::post('social/setting/store', 'SocialController@socialSettingStore')->name('socialSettingStore');
-	Route::get('social/setting/edit/{id}', 'SocialController@socialSettingEdit')->name('socialSettingEdit');
-	Route::post('social/setting/update/{id}', 'SocialController@socialSettingUpdate')->name('socialSettingUpdate');
-	Route::get('social/setting/delete/{id}', 'SocialController@socialSettingDelete')->name('socialSettingDelete');
-
+	Route::get('header/setting', 'GeneralSettingController@headerSetting')->name('headerSetting');
+	Route::post('header/setting/update/{id}', 'GeneralSettingController@headerSettingUpdate')->name('headerSettingUpdate');
 	Route::get('footer/setting', 'GeneralSettingController@footerSetting')->name('footerSetting');
 	Route::post('footer/setting/update/{id}', 'GeneralSettingController@footerSettingUpdate')->name('footerSettingUpdate');
 
@@ -31,7 +37,26 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth','adminPermission'
 	Route::get('change/password', 'AdminController@passwordChange')->name('admin.passwordChange');
 	Route::post('change/password', 'AdminController@passwordUpdate')->name('admin.passwordChange');
 
+	Route::get('social/login/setting', 'SocialController@socialLoginSetting')->name('socialLoginSetting');
+	Route::post('social/login/setting/update', 'SocialController@socialLoginSettingUpdate')->name('socialLoginSettingUpdate');
 
+	Route::get('social/setting', 'SocialController@socialSetting')->name('socialSetting');
+	Route::post('social/setting/store', 'SocialController@socialSettingStore')->name('socialSettingStore');
+	Route::get('social/setting/edit/{id}', 'SocialController@socialSettingEdit')->name('socialSettingEdit');
+	Route::post('social/setting/update/{id}', 'SocialController@socialSettingUpdate')->name('socialSettingUpdate');
+	Route::get('social/setting/delete/{id}', 'SocialController@socialSettingDelete')->name('socialSettingDelete');
+
+	// site setting
+
+	Route::get('site/setting', 'SiteSettingController@siteSettings')->name('site_settings');
+	Route::get('smtp/configurations', 'SiteSettingController@smtp_settings')->name('smtp_settings');
+	Route::match(['get', 'post'], 'otp/configurations', 'SiteSettingController@otp_configurations')->name('otp_configurations');
+	Route::post('env_key_update', 'SiteSettingController@env_key_update')->name('env_key_update');
+
+	Route::get('site/setting/update/status', 'SiteSettingController@siteSettingActiveDeactive')->name('siteSettingActiveDeactive');
+	Route::match(['get', 'post'], 'site/setting/update', 'SiteSettingController@siteSettingUpdate')->name('siteSettingUpdate');
+
+	//category
 	Route::get('category', 'CategoryController@index')->name('category.list');
 	Route::get('category/create', 'CategoryController@create')->name('category.create');
 	Route::post('category/store', 'CategoryController@store')->name('category.store');
@@ -122,21 +147,37 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth','adminPermission'
 
     Route::get('news/selectImage', 'NewsController@selectImage')->name('selectImage');
 
-    Route::get('news/status/{status}', 'NewsController@status')->name('news.status');
+    Route::get('news/approval/{id}', 'NewsController@newApproveUnapprove')->name('newApproveUnapprove');
     Route::get('breaking_news/{status}', 'NewsController@breaking_news')->name('breaking_news');
 
+    	// payment route
+	Route::get('payment/gateway', 'PaymentGatewayController@index')->name('paymentGateway');
+	Route::post('payment/gateway/store', 'PaymentGatewayController@store')->name('paymentGateway.store');
+	Route::get('payment/gateway/edit/{id}', 'PaymentGatewayController@edit')->name('paymentGateway.edit');
+	Route::post('payment/gateway/update', 'PaymentGatewayController@update')->name('paymentGateway.update');
+	Route::get('payment/gateway/delete/{id}', 'PaymentGatewayController@delete')->name('paymentGateway.delete');
+
+    //withdraw request list
+    Route::get('wallet/withdraw/configuration', 'WithdrawController@userWithdrawConfigure')->name('withdrawConfigure');
+	Route::get('wallet/withdraw/request', 'WithdrawController@withdrawRequest')->name('withdrawRequest');
+	Route::get('get/withdraw/history/{user_id}', 'WithdrawController@getWithdrawHistory')->name('getWithdrawHistory');
+	Route::get('withdraw/request/update', 'WithdrawController@changeWithdrawStatus')->name('changeWithdrawStatus');
+	Route::get('transactions', 'WithdrawController@wallet_transactions')->name('admin.transactions');
+
+	Route::post('wallet/recharge', 'WithdrawController@walletRecharge')->name('walletRecharge');
+	Route::get('get/wallet/information', 'WithdrawController@getWalletInfo')->name('getWalletInfo');
     //not use now
     // Route::post('news/image_upload', 'NewsController@image_upload')->name('image_upload');
 
-	Route::prefix('phato')->name('phato.')->group( function(){
-	    Route::get('gallery', 'MediaGalleryController@phato_list')->name('gallery');
-	    Route::get('create', 'MediaGalleryController@phato_create')->name('create');
-	    Route::post('upload', 'MediaGalleryController@phato_upload')->name('upload');
-	    Route::get('edit/{id}', 'MediaGalleryController@phato_edit')->name('edit');
-	    Route::post('update', 'MediaGalleryController@phato_update')->name('update');
-	    Route::get('delete/{id}', 'MediaGalleryController@phato_delete')->name('delete');
+	Route::prefix('photo')->name('photo.')->group( function(){
+	    Route::get('gallery', 'MediaGalleryController@photo_list')->name('gallery');
+	    Route::get('create', 'MediaGalleryController@photo_create')->name('create');
+	    Route::post('upload', 'MediaGalleryController@photo_upload')->name('upload');
+	    Route::get('edit/{id}', 'MediaGalleryController@photo_edit')->name('edit');
+	    Route::post('update', 'MediaGalleryController@photo_update')->name('update');
+	    Route::get('delete/{id}', 'MediaGalleryController@photo_delete')->name('delete');
 
-	    Route::post('upload/CKEditor', 'MediaGalleryController@phato_uploadCKEditor')->name('phato_uploadCKEditor');
+	    Route::post('upload/CKEditor', 'MediaGalleryController@photo_uploadCKEditor')->name('photo_uploadCKEditor');
 	});
 
 	Route::prefix('video')->name('video.')->group( function(){
@@ -149,14 +190,16 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth','adminPermission'
 	});
 
 	Route::prefix('reporter')->name('reporter.')->group( function(){
-	    Route::get('list', 'ReporterController@index')->name('list');
+	    Route::get('list/{status?}', 'ReporterController@index')->name('list');
 	    Route::get('create', 'ReporterController@create')->name('create');
 	    Route::post('store', 'ReporterController@store')->name('store');
-	    Route::get('{id}/edit', 'ReporterController@edit')->name('edit');
+	    Route::get('edit/{id}', 'ReporterController@edit')->name('edit');
 	    Route::post('update/{id}', 'ReporterController@update')->name('update');
 	    Route::get('delete/{id}', 'ReporterController@delete')->name('delete');
 	    Route::get('status/{id}', 'ReporterController@reporterStatus')->name('status');
-	});	
+	    Route::get('reporter/secret/login/{id}', 'ReporterController@reporterSecretLogin')->name('secretLogin');
+	    Route::get('profile/{slug}', 'ReporterController@reporterProfile')->name('profile');
+	});
 
 	Route::prefix('reporter-request')->name('reporterRequest.')->group( function(){
 	    Route::get('list', 'ReporterController@manage_request')->name('list');
@@ -164,6 +207,18 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth','adminPermission'
 	    Route::get('AcceptReject/{status}', 'ReporterController@statusAcceptReject')->name('status');
 	  
 	});
+
+	Route::prefix('user')->name('admin.')->group( function() {
+		Route::post('store', 'UserAdminController@store')->name('user.store');
+		Route::get('edit/{id}', 'UserAdminController@edit')->name('user.edit');
+		Route::post('update', 'UserAdminController@update')->name('user.update');
+		Route::get('delete/{id}', 'UserAdminController@delete')->name('user.delete');
+
+		Route::get('list/{status?}', 'UserAdminController@userList')->name('user.list');
+		Route::get('secret/login/{id}', 'UserAdminController@userSecretLogin')->name('userSecretLogin');
+		Route::get('profile/{username}', 'UserAdminController@userProfile')->name('userProfile');
+	});
+
 
 	Route::prefix('page')->name('page.')->group( function(){
 		Route::get('list', 'PageController@list')->name('list');
@@ -180,18 +235,18 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth','adminPermission'
 		Route::get('edit/{slug}', 'PollController@edit')->name('edit');
 		Route::post('update', 'PollController@update')->name('update');
 		Route::get('delete/{id}', 'PollController@delete')->name('delete');
+
+		Route::get('option/delete/{id}', 'PollController@pollOptionDelete')->name('option.delete');
+		Route::get('result/{poll_id}', 'PollController@pollResult')->name('result');
 	});
 
 	Route::prefix('advertisement')->name('addvertisement.')->group( function(){
         Route::get('list', 'AddvertisementController@index')->name('list');
-        Route::get('setting', 'AddvertisementController@setting')->name('setting');
 		Route::get('create', 'AddvertisementController@create')->name('create');
 		Route::post('store', 'AddvertisementController@store')->name('store');
 		Route::get('edit/{id}', 'AddvertisementController@edit')->name('edit');
-		Route::post('update/{id}', 'AddvertisementController@update')->name('update');
+		Route::post('update', 'AddvertisementController@update')->name('update');
 		Route::get('delete/{id}', 'AddvertisementController@delete')->name('delete');
-		Route::get('status/{id}', 'AddvertisementController@status')->name('status');
-
 	});
 
     Route::prefix('setting')->name('setting.')->group( function() {
@@ -203,16 +258,6 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth','adminPermission'
     });
 
 
-    Route::prefix('user')->name('admin.')->group( function() {
-		Route::post('store', 'UserAdminController@store')->name('user.store');
-		Route::get('edit/{id}', 'UserAdminController@edit')->name('user.edit');
-		Route::post('update', 'UserAdminController@update')->name('user.update');
-		Route::get('delete/{id}', 'UserAdminController@delete')->name('user.delete');
-
-		Route::get('list/{status?}', 'UserAdminController@userList')->name('user.list');
-		Route::get('secret/login/{id}', 'UserAdminController@userSecretLogin')->name('userSecretLogin');
-		Route::get('profile/{username}', 'UserAdminController@userProfile')->name('user.profile');
-	});
 
     Route::get('comment/list', 'CommentController@allComments')->name('allComments');
 	Route::post('comment/update', 'CommentController@commentUpdate')->name('commentUpdate');

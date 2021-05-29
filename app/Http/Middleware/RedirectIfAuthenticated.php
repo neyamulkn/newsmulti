@@ -25,9 +25,9 @@ class RedirectIfAuthenticated
                     return redirect()->route('admin.dashboard');
                 }
                 break;
-            case 'vendor':
+            case 'reporter':
                 if (Auth::guard($guard)->check()) {
-                    return redirect()->route('vendor.dashboard');
+                    return redirect()->route('reporter.dashboard');
                 }
                 break;
             case 'staff':

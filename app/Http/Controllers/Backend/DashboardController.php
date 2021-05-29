@@ -14,15 +14,12 @@ class DashboardController extends Controller
 {
 
     public function dashboard(){
-    	$data['reporters'] = User::with('userinfo')->where('role_id', 2)->orWhere('role_id', 4)->count();
-    	$data['pending_news'] = News::where('status', 0)->count();
+    	$data['reporters'] = Reporter::with('userinfo')->count();
+    	$data['pending_news'] = News::where('status', 'pending')->count();
     	$data['news'] = News::count();
     	$data['category'] = Category::count();
-    	if(Auth::user()->role_id != 3){
-    		return view('backend.index')->with($data);
-    	}else{
-    		return Redirect::route('404');
-    	}
-       
+    	return view('backend.dashboard')->with($data);
+
+
     }
 }

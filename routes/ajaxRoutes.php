@@ -9,12 +9,13 @@ route::group(['middleware' => ['auth']], function(){
 //profile image change for all user
 Route::post('change/profile/image', 'AjaxController@changeProfileImage')->name('changeProfileImage');
 
-//get product subcategory by category ID
-Route::get('get/subcategory/{cat_id}', 'AjaxController@get_subcategory')->name('getSubCategory');
-//get product sub child category by sub category ID
-Route::get('get/subchild/category/{subcat_id}', 'AjaxController@get_subchild_category')->name('getSubChildCategory');
+//ajax route
+Route::get('get_subcategoryBy_id/{id}', 'AjaxController@get_subcategoryBy_id')->name('get_subcategory');
 
-Route::get('get/attribute/{cat_id}', 'AjaxController@getAttributeByCategory')->name('getAttributeByCategory');
+Route::get('get_district/{id}', 'AjaxController@get_district')->name('get_district');
+
+Route::get('get/upazila/{id}', 'AjaxController@get_upazila')->name('get_upazila');
+Route::get('check/unique/value', 'AjaxController@checkField')->name('checkField');
 
 //delete data common all table
 Route::get('/delete/data/common', 'AjaxController@deleteDataCommon')->name('deleteDataCommon');

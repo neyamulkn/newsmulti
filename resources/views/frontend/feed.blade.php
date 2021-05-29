@@ -27,13 +27,13 @@
     <guid isPermaLink="false">{{ route('news_details', $feed_news->news_slug)}}</guid>
     
     <description><![CDATA[
-     <img style="float:left; margin:0 10px 10px 0;" width="150" src="{{ asset('upload/images/thumb_img_box/'. $feed_news->image->source_path)}}" />
+     <img style="float:left; margin:0 10px 10px 0;" width="150" src="{{ asset('upload/images/news/'. $feed_news->image->source_path)}}" />
     {!! Str::limit($feed_news->news_dsc, 500 ) !!}]]></description>
      
     <author><![CDATA[ @if($feed_news->reporter) {{ $feed_news->reporter->name }} @else বিডি টাইপ @endif  ]]></author>
     
     <image>
-      <url>{{ asset('upload/images/thumb_img_box/'. $feed_news->image->source_path)}}</url>
+      <url>{{ asset('upload/images/news/'. $feed_news->image->source_path)}}</url>
     </image>
   </item>
 @endforeach

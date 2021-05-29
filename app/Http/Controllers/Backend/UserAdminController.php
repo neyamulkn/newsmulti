@@ -3,22 +3,17 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Transaction;
+use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
 
 use App\User;
 class UserAdminController extends Controller
 {
     public function userList(Request $request, $status= ''){
-        $user  = User::where('role_id', 3);
+        $user  = User::where('role_id', 'user');
         if($status){
-            
-            if($status == 'active'){
-                $get_news->where('news.status', 1);
-            }if($status == 'pending'){
-                $get_news->where('news.status', 2);
-            }if($status == 'inactive'){
-                $get_news->where('news.status', 0);
-            }
+            $user->where('status', $status);
         }
         if(!$status && $request->status && $request->status != 'all'){
             $user->where('status', $request->status);
@@ -34,25 +29,29 @@ class UserAdminController extends Controller
         $perPage = 15;
         if($request->show){
             $perPage = $request->show;
-        } 
+        }
         $users  = $user->orderBy('id', 'desc')->paginate($perPage);
-     
+
         return view('backend.user.user')->with(compact('users'));
     }
 
     public function userProfile($username){
-        $user  = User::where('username', $username)->first();
-        return view('admin.user.profile')->with(compact('user'));
+        $data['user']  = User::where('username', $username)->first();
+        $data['transactions'] = Transaction::with(['user:id,name,username,mobile', 'addedBy'])
+            ->where('user_id', $data['user']->id)
+            ->whereIn('type', ['wallet', 'withdraw'])
+            ->orderBy('id', 'desc')->paginate(15);
+        return view('backend.user.profile')->with($data);
     }
 
-    public function userecretLogin($id)
+    public function userSecretLogin($id)
     {
 
         $user = User::findOrFail(decrypt($id));
 
         auth()->guard('web')->login($user, true);
 
-        Toastr::success('user panel login success.');
+        Toastr::success('User panel login success.');
         return redirect()->route('user.dashboard');
 
     }

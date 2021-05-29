@@ -40,7 +40,7 @@
             method:"get",
             success:function(data){
                 if(data.status){
-                    $("#item"+item+id).hide();
+                    $("#item"+item+id).remove();
                     toastr.success(data.msg);
                 }else{
                     toastr.error(data.msg);

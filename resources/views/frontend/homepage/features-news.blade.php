@@ -6,9 +6,9 @@
             ->where('news.breaking_news', 1)
             ->limit($section->item_number)
             ->orderBy('news.id', 'DESC')
-            ->where('news.status', '=', 1)->where('news.lang', '=', 1)->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
+            ->where('news.status', '=', 'active')->where('news.lang', '=', 'bd')->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 @endphp
-
+@if(count($feature_section_news)>0)
 <section @if($section->layout_width == 'full') style="background:{{$section->background_color}} url({{asset('upload/images/homepage/'.$section->background_image)}}) no-repeat 50% 50% fixed; background-size: cover;" @endif>
 
   @if($section->layout_width == 'box')
@@ -25,7 +25,7 @@
                                     <div class="news-post standard-post2 ">
                                         <a href="{{route('news_details', $section_news->news_slug)}}">
                                             <div class="post-gallery">
-                                                <img src="{{ asset('upload/images/thumb_img_box/'. $section_news->source_path)}}" alt="">
+                                                <img src="{{ asset('upload/images/thumb_img/'. $section_news->source_path)}}" alt="">
                                                 @if($section_news->type == 3)
                                                     <a class="play-link" href="{{route('news_details', $section_news->news_slug)}}"><i class="fa fa-play-circle-o"></i></a>
                                                 @elseif($section_news->type == 4)
@@ -79,4 +79,4 @@
         @if($section->layout_width == 'box')
     </div>@endif
 </section>
-
+@endif

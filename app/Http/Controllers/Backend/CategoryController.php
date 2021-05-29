@@ -3,29 +3,21 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Traits\CreateSlug;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Support\Facades\Auth;
-use Str;
+
 class CategoryController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+    use createSlug;
+
     public function index()
     {
         $get_category = Category::orderBy('position', 'asc')->get();
-        return view('backend.category-list')->with(compact('get_category'));
+        return view('backend.category.category')->with(compact('get_category'));
     }
-
-
-    public function create()
-    {
-        return view('backend.category');
-    }
-
 
     public function store(Request $request)
     {
@@ -33,18 +25,22 @@ class CategoryController extends Controller
             'category_bd' => 'required',
             'category_en' => 'required',
         ]);
-        $creator_id = Auth::user()->id;
-        $cat_slug_en = Str::slug($request->category_en);
-        $cat_slug_bd = preg_replace('/\s+/u', '-', trim($request->category_bd));
-        $data = [
-            'category_bd' => $request->category_bd,
-            'cat_slug_bd' => $cat_slug_bd,
-            'category_en' => $request->category_en,
-            'cat_slug_en' => $cat_slug_en,
-            'creator_id' => $creator_id,
-            'status' => ($request->status) ? '1' : '0',
-        ];
-        $insert = Category::create($data);
+        $creator_id = Auth::id();
+
+        $category = new Category();
+        $category->category_bd = $request->category_bd;
+        $category->cat_slug_bd = $this->createSlug('categories', $request->category_bd, 'cat_slug_bd');
+        $category->category_en = $request->category_en;
+        $category->cat_slug_en = $this->createSlug('categories', $request->category_en, 'cat_slug_en');;
+        $category->creator_id = $creator_id;
+        $category->status = ($request->status) ? '1' : '0';
+
+        $category->meta_title = ($request->meta_title) ? $request->meta_title : $request->news_title;
+        $category->keywords = ($request->keywords) ? implode(',', $request->keywords) : '';
+        $category->meta_tags = ($request->meta_tags) ? implode(',', $request->meta_tags) : '';
+        $category->meta_description = $request->meta_description;
+        $category->save();
+
         Toastr::success('Category created.');
         return back();
     }
@@ -52,27 +48,27 @@ class CategoryController extends Controller
     public function edit($id)
     {
         $data = Category::find($id);
-        echo view('backend.edit-form.category-edit')->with(compact('data'));
+        echo view('backend.category.edit.category')->with(compact('data'));
     }
 
     public function update(Request $request)
     {
-
         $request->validate([
             'category_bd' => 'required',
             'category_en' => 'required',
         ]);
 
-        $creator_id = Auth::user()->id;
-       
-        $cat_slug_bd = preg_replace('/\s+/u', '-', trim($request->category_bd));
-        $data = [
-            'category_bd' => $request->category_bd,
-            'category_en' => $request->category_en,
-            'creator_id' => $creator_id,
-            'status' => ($request->status) ? '1' : '0',
-        ];
-        $update = Category::where('id', $request->id)->update($data);
+        $category = Category::find($request->id);
+        $category->category_bd = $request->category_bd;
+        $category->category_en = $request->category_en;
+
+        $category->status = ($request->status) ? '1' : '0';
+
+        $category->meta_title = ($request->meta_title) ? $request->meta_title : $request->news_title;
+        $category->keywords = ($request->keywords) ? implode(',', $request->keywords) : '';
+        $category->meta_tags = ($request->meta_tags) ? implode(',', $request->meta_tags) : '';
+        $category->meta_description = $request->meta_description;
+        $update = $category->save();
         if($update){
             Toastr::success('Category update successfull.');
         }else{
@@ -89,14 +85,14 @@ class CategoryController extends Controller
         if($delete){
             $output = [
                 'status' => true,
-                'msg' => 'Category delete successfull.'
+                'msg' => 'Category delete successful.'
             ];
         }else{
             $output = [
                 'status' => true,
                 'msg' => 'Sorry category not deleted.'
             ];
-           
+
         }
         return response()->json($output);
     }

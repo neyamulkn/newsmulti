@@ -14,7 +14,7 @@ function banglaDate($date){
     @if($find_page->template == 1)
         {!! $find_page->page_dsc !!}
     @elseif($find_page->template == 2)
-        <?php $get_news = App\Models\News::with(['categoryList', 'image'])->where('lang', '=', 1)->orderBy('id', 'DESC')->where('status', '=', 1)->paginate(25) ?>
+        <?php $get_news = App\Models\News::with(['categoryList', 'image'])->where('lang', '=', 'bd')->orderBy('id', 'DESC')->where('status', '=', 'active')->paginate(25) ?>
 
         <div class="row">
             <div class="grid-box">
@@ -25,7 +25,7 @@ function banglaDate($date){
                                 <div class="col-md-6 col-sm-6" >
                                     <div class="news-post standard-post2">
                                         <div class="post-gallery">
-                                            <img src="{{ asset('upload/images/'. $news->image->source_path)}}" alt="">
+                                            <img src="{{ asset('upload/images/news/'. $news->image->source_path)}}" alt="">
                                              @if($news->type == 3)
                                                 <a class="play-link" href="{{route('news_details', $news->news_slug)}}"><i class="fa fa-play-circle-o"></i></a>
                                             @elseif($news->type == 4)
@@ -96,7 +96,7 @@ function banglaDate($date){
             {{$get_news->links()}}
         </div>
     @elseif($find_page->template == 3)
-       <?php $reporters = DB::table('users')->leftJoin('reporters', 'users.id', 'reporters.user_id')->where('users.role_id', 2)->orderBy('reporters.id', 'ASC')->get(); ?>
+       <?php $reporters = DB::table('users')->leftJoin('reporters', 'users.id', 'reporters.user_id')->where('users.role_id', 'reporter')->orderBy('reporters.id', 'ASC')->get(); ?>
 
         <div class="row">
             @foreach($reporters as $reporter)

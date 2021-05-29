@@ -68,12 +68,12 @@ class RegisterController extends Controller
         if(config('siteSetting.reCaptcha_login') == 1){
             $secretKey = config('siteSetting.recaptcha_secret_key');
             $captcha = $_POST['g-recaptcha-response'];
-            
+
             if(!$captcha){
                 Toastr::error('Please check the robot check.');
                 return back();
             }
-            
+
             $ip = $_SERVER['REMOTE_ADDR'];
             $response=file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".$secretKey."&response=".$captcha."&remoteip=".$ip);
             $responseKeys = json_decode($response,true);
@@ -85,15 +85,15 @@ class RegisterController extends Controller
             }
         }
 
-        $email = $phone = null;
+        $email = $mobile = null;
         if (filter_var($data['mobile_or_email'], FILTER_VALIDATE_EMAIL)) {
             $email = $data['mobile_or_email'];
             $check= User::select('username')->where('email', $email)->first();
             Toastr::error('Sorry email already exists.');
         }else{
-            $phone = $data['mobile_or_email'];
-            $check = User::select('username')->where('phone', $phone)->first();
-            Toastr::error('Sorry phone already exists.');
+            $mobile = $data['mobile_or_email'];
+            $check = User::select('username')->where('mobile', $mobile)->first();
+            Toastr::error('Sorry mobile already exists.');
         }
 
         if($check){
@@ -104,11 +104,11 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'username' => $this->createSlug($data['name']),
             'email' => $email,
-            'phone' => $phone,
-            'role_id' => 3,
-            'creator_id' => 0,
+            'mobile' => $mobile,
+            'role_id' => 'user',
+            'created_by' => 0,
             'password' => Hash::make($data['password']),
-            'status' => '1',
+            'status' => 'active',
         ]);
 
     }

@@ -7,7 +7,7 @@
                 <section class="ticker-news">
                     <div class="ticker-news-box" style=" box-shadow:0 0 6px -3px {{ $section->text_color }};">
                         <span class="breaking-news">{{$section->title}} </span>
-                        <?php $get_breaking_news = DB::table('news')->where('breaking_news', 1)->where('lang', 1)->where('status', '=', 1)->select('news_title', 'news_slug', 'created_at')->take($section->item_number)->orderBy('id', 'DESC')->get(); ?>
+                        <?php $get_breaking_news = DB::table('news')->where('breaking_news', 1)->where('lang', 'bd')->where('status', '=', 'active')->select('news_title', 'news_slug', 'created_at')->take($section->item_number)->orderBy('id', 'DESC')->get(); ?>
                         <ul id="js-news">
                             @if(count($get_breaking_news)>0)
                                 @foreach($get_breaking_news as $breaking_news)

@@ -1,175 +1,159 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!-- Tell the browser to be responsive to screen width -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="{{asset('assets')}}/images/favicon.png">
-    <title>Registration Pannel</title>
-        <!-- Custom CSS -->
-    <link rel="stylesheet" type="text/css" href="{{ mix('backend/css/app.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('backend/css/custom.css') }}">
-    <!-- page css -->
-    <link href="{{asset('backend/css')}}/pages/login-register-lock.css" rel="stylesheet">
-     @if(config('siteSetting.reCaptcha_login') == 1)
+@extends('frontend.layouts.master')
+@section('title', 'Register | '.Config::get('siteSetting.site_name'))
+@php  
+    $reCaptcha = App\Models\SiteSetting::where('type', 'google_recaptcha')->first(); 
+    $socailLogins = App\Models\SiteSetting::where('type', 'facebook_login')->orWhere('type', 'google_login')->orWhere('type', 'twitter_login')->get(); 
+@endphp
+@section('css')
+    <style type="text/css">
+        @media (min-width: 1200px){
+            .container {
+                max-width: 1200px !important;
+            }
+        }
+        .dropdown-toggle::after, .dropup .dropdown-toggle::after {
+            content: initial !important;
+        }
+        .card-footer, .card-header {
+            margin-bottom: 5px;
+            border-bottom: 1px solid #ececec;
+        }
+        .error{color:red;}
+    </style>
+    @if($reCaptcha->status == 1)
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     @endif
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-</head>
+@endsection
 
-<body class="skin-default card-no-border">
+@section('content')
 
-<!-- ============================================================== -->
-<!-- Main wrapper - style you can find in pages.scss -->
-<!-- ============================================================== -->
-<section id="wrapper">
-    <div class="login-register" style="background-image:url({{asset('assets')}}/images/background/login-register.jpg);">
-        <div class="login-box card">
-            <div class="card-body">
-                <a href="{{route('home')}}">
-                <img src="{{ asset('frontend')}}/images/logo-black.png" width="65%" alt="homepage" class="dark-logo" /></a><hr/>
-                <form class="form-horizontal floating-labels" id="loginform" action="{{ route('registration') }}" method="POST">
-                    @csrf
-                   
-                    <div class="form-group">
-                        <div class="col-xs-12">
-                            <label for="name" >Full Name</label>
-                            <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+<section>
+    <div class="container">
+        
+        <div class="row justify-content-center" style="padding-top: 20px; ">
+            <div class="col-md-3" > </div>
+            <div class="col-md-6 col-12" style="background: #fff;">
+                <div class="card">
+                       <div class="card-body" style="padding: 0px 10px;">
+                            <form id="loginform" data-parsley-validate action="{{route('userRegister')}}" method="post" >
+                                @csrf
+                                <div class="card-header text-center"><h3>Sign Up</h3></div>
+                                @if(Session::has('status'))
+                                <div class="alert alert-success">
+                                  <strong>Success! </strong> {{Session::get('status')}}
+                                </div>
+                                @endif
+                                @if(Session::has('error'))
+                                <div class="alert alert-danger">
+                                  {{Session::get('error')}}
+                                </div>
+                                @endif
+                                <div class="form-group">
+                                  <label class="control-label required" for="name">Full Name</label>
+                                  <input type="text" required name="name" value="{{old('name')}}" placeholder="Enter Name" data-parsley-required-message = "Name is required" id="input-email" class="form-control">
+                                  @if ($errors->has('name'))
+                                        <span class="error" role="alert">
+                                            {{ $errors->first('name') }}
+                                        </span>
+                                    @endif
+                                </div>
 
-                            @error('name')
-                            <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                            @enderror
-                        </div>
-                    </div>
-                    <!-- <div class="form-group">
-                        <div class="col-xs-12">
-                        <label for="gender" >Gender</label>
-                           <select name="gender" id="gender" required="required" class="form-control @error('gender') is-invalid @enderror">
-                             <option value=""></option>
-                             <option value="1">Male</option>
-                             <option value="2">Female</option>
-                             <option value="3">Others</option>
-                           </select>
+                                <div class="form-group">
+                                  <label class="control-label required" for="mobile">Mobile Number</label>
+                                  <input type="text" required name="mobile" value="{{old('mobile')}}" pattern="/(01)\d{9}/" minlength="11" placeholder="Enter Mobile Number" id="mobile" data-parsley-required-message = "Mobile number is required" class="form-control">
+                                  @if ($errors->has('mobile'))
+                                        <span class="error" role="alert">
+                                            {{ $errors->first('mobile') }}
+                                        </span>
+                                    @endif
+                                </div>
 
-                            @error('gender')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-xs-12">
-                            <label for="birthday" >Birthday date</label>
-                            <input id="birthday" type="date" class="form-control @error('birthday') is-invalid @enderror" name="birthday" value="{{ old('birthday') }}" required autocomplete="birthday" autofocus>
+                                <div class="form-group">
+                                  <label class="control-label" for="email">Email Address (optional)</label>
+                                  <input type="email" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-zA-Z]{2,4}"  name="email" value="{{old('email')}}" placeholder="Enter Email Address" id="email" class="form-control">
+                                  @if ($errors->has('email'))
+                                        <span class="error" role="alert">
+                                            {{ $errors->first('email') }}
+                                        </span>
+                                    @endif
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label required" for="password">Password</label>
+                                    <input type="password" name="password" placeholder="Password" required id="password" data-parsley-required-message = "Password is required" minlength="6" class="form-control">
+                                    @if ($errors->has('password'))
+                                        <span class="error" role="alert">
+                                           {{ $errors->first('password') }}
+                                        </span>
+                                    @endif
+                                </div>
 
-                            @error('birthday')
-                            <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                            @enderror
-                        </div>
-                    </div> -->
-                    <div class="form-group ">
-                        <div class="col-xs-12">
-                            <label for="mobile_or_email" >Mobile number or email address</label>
-                            <input id="mobile_or_email" type="text" class="form-control @error('mobile_or_email') is-invalid @enderror" name="mobile_or_email" value="{{ old('mobile_or_email') }}"  required autocomplete="mobile_or_email">
+                                @if($reCaptcha->status == 1)
+                                    <div class="form-group row">
+                                        <div class="col-md-12">
+                                            <div class="g-recaptcha" data-sitekey="{{ $reCaptcha->public_key }}"></div>
+                                            <span id="recaptcha-error" style="color: red"></span>
+                                        </div>
+                                    </div>
+                                @endif
+                                <div class="form-group row">
+                                    <div class="col-md-12">
+                                        <div style=" display: flex!important;" class="d-flex no-block align-items-center">
+                                            <div style="display: inline-flex;" class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="Remember"> 
+                                                <label style="margin: 0 5px;" class="custom-control-label" for="Remember"> Remember me</label>
+                                            </div> 
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-12">
+                               
+                                    <button class="btn btn-block btn-lg btn-info btn-rounded" type="submit">Sign Up</button>
+                                </div> 
+                                </div>
+                                <div class="form-group m-b-0">
+                                    <div class="col-sm-12 text-center">
+                                        Already have an account?  <a href="{{route('login')}}" class="text-info m-l-5"><b>Sign In</b></a>
+                                    </div>
+                                </div> 
+                                @if(count($socailLogins)>0)
+                                <div id="column-login" style="margin:15px 0" class="col-sm-8 pull-right">
+                                    <div class="row">
+                                        <div class="social_login pull-right" >
 
-                            @error('mobile_or_email')
-                            <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                            @enderror
+                                        @foreach($socailLogins as $socailLogin)
+                                            @if($socailLogin->type == 'facebook_login' && $socailLogin->status)
+                                            <a href="{{route('social.login', 'facebook')}}" class="btn btn-social-icon btn-sm btn-facebook"><i class="fa fa-facebook fa-fw" aria-hidden="true"></i></a>
+                                            @endif
+                                            @if($socailLogin->type == 'google_login' && $socailLogin->status == 1)
+                                            <a style="background: red" href="{{route('social.login', 'google')}}" class="btn btn-social-icon btn-sm btn-google-plus"><i class="fa fa-google fa-fw" aria-hidden="true"></i></a>
+                                            @endif
+                                            @if($socailLogin->type == 'twitter_login' && $socailLogin->status == 1)
+                                            <a href="{{route('social.login', 'twitter')}}" class="btn btn-social-icon btn-sm btn-twitter"><i class="fa fa-twitter fa-fw" aria-hidden="true"></i></a>
+                                            @endif
+                                            @if($socailLogin->type == 'linkedin_login' && $socailLogin->status == 1)
+                                            <a href="{{route('social.login', 'linkedin')}}" class="btn btn-social-icon btn-sm btn-linkdin"><i class="fa fa-linkedin fa-fw" aria-hidden="true"></i></a>
+                                            @endif
+                                          @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif 
+                            </form>
                         </div>
-                    </div>
-                 
-                    <div class="form-group ">
-                        <div class="col-xs-12">
-                            <label for="password" >Password</label>
-                            <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
-
-                            @error('password')
-                            <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-xs-12">
-                            <label for="password-confirm" >Confirm password</label>
-                            <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
-                        </div>
-                    </div>
-                    @if(config('siteSetting.reCaptcha_login') == 1)
-                    <div class="form-group row">
-                        <div class="col-md-12">
-                            <div class="g-recaptcha" data-sitekey="{{config('siteSetting.recaptcha_site_key')}}"></div>
-                            <span id="recaptcha-error" style="color: red"></span>
-                        </div>
-                    </div>
-                    @endif
-                    <div class="form-group row">
-                        <div class="col-md-12">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="customCheck1">
-                                <label style="margin-left: 20px" class="custom-control-label" for="customCheck1">I agree to all <a href="javascript:void(0)">Terms</a></label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group text-center p-b-20">
-                        <div class="col-xs-12">
-                            <button class="btn btn-info btn-lg btn-block btn-rounded text-uppercase waves-effect waves-light" type="submit">Sign Up</button>
-                        </div>
-                    </div>
-                    <div class="form-group m-b-0">
-                        <div class="col-sm-12 text-center">
-                            Already have an account? <a href="{{route('login')}}" class="text-info m-l-5"><b>Sign In</b></a>
-                        </div>
-                    </div>
-                </form>
+                </div>
+                
+                <div class="col-md-3 col-12"></div>     
             </div>
         </div>
     </div>
 </section>
-<!-- ============================================================== -->
-<!-- End Wrapper -->
-<!-- ============================================================== -->
-<!-- ============================================================== -->
-<!-- All Jquery -->
-<!-- ============================================================== -->
-<script src="{{asset('backend/assets')}}/node_modules/jquery/jquery-3.2.1.min.js"></script>
-<!-- Bootstrap tether Core JavaScript -->
-<script src="{{asset('backend/assets')}}/node_modules/popper/popper.min.js"></script>
-<script src="{{asset('backend/assets')}}/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-<script type="text/javascript">
-    $(function() {
-        $(".preloader").fadeOut();
-    });
-    $(function() {
-        $('[data-toggle="tooltip"]').tooltip()
-    });
-    // ==============================================================
-    // Login and Recover Password
-    // ==============================================================
-    $('#to-recover').on("click", function() {
-        $("#loginform").slideUp();
-        $("#recoverform").fadeIn();
-    });
+@endsection
 
-    @if(config('siteSetting.reCaptcha_login') == 1)
+@section('js')
+<script type="text/javascript">
+    @if($reCaptcha->status == 1)
         $("#loginform").submit(function(event) {
 
            var recaptcha = $("#g-recaptcha-response").val();
@@ -180,24 +164,7 @@
         });
     @endif
 </script>
+<script src="{{ asset('backend/js/parsley.min.js') }}"></script>
+@endsection
 
- <!-- for label -->
-  <script type="text/javascript">
-    $(".floating-labels .form-control").on("focus blur",function(e){$(this).parents(".form-group").toggleClass("focused","focus"===e.type||0<this.value.length)}).trigger("blur")
-  </script>
-<!--end label -->
 
-    <!-- Popup message jquery -->
-    <script src="http://cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
-
-    {!! Toastr::message() !!}
-    <script>
-        @if($errors->any())
-        @foreach($errors->all() as $error)
-        toastr.error("{{ $error }}");
-        @endforeach
-        @endif
-    </script>
-</body>
-
-</html>

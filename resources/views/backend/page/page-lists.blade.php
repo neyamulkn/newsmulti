@@ -47,8 +47,10 @@
                                             <tr>
                                                 <th>Bangla Name</th>
                                                 <th>English Name</th>
-                                                <th>Category Name</th>
-                                                <th>Menu</th>
+                                                <th>Template</th>
+                                                <th>Page Link</th>
+                                                <th>Display In</th>
+                                                <th>Is Default</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -68,12 +70,17 @@
                                                     @endif
                                                 </td>
                                                 <td>
+                                                    <a href="{{url(($data->page_slug == 'homepage') ? '/' :  $data->page_slug)}}" target="_blank">Copy Link <i class="fas fa-external-link-alt"></i> </a>
+                                                </td>
+                                                <td>
                                                     @if($data->menu == 1) Header Top
                                                     @elseif($data->menu == 2) Main Menu
+                                                    @elseif($data->menu == 3) Footer Menu
                                                     @else
-                                                        Footer Menu
+                                                        Not Set
                                                     @endif
                                                 </td>
+                                                <td>@if($data->is_default ==1)<span class="label label-warning">Default</span>@else<span class="label label-info">Custom</span>@endif</td>
                                                 <td>
                                                     <div class="custom-control custom-switch">
                                                       <input name="status"  onclick="satusActiveDeactive('pages', {{$data->id}})" type="checkbox" class="custom-control-input" {{($data->status == 1) ? 'checked' : ''}} id="{{$data->id}}">
@@ -82,7 +89,9 @@
                                                 </td>
                                                 <td>
                                                     <a href="{{ route('page.edit', $data->page_slug) }}" class="btn btn-info btn-sm"><i class="ti-pencil" aria-hidden="true"></i> Edit</a>
+                                                     @if($data->is_default !=1)
                                                     <button data-target="#delete" onclick="deleteConfirmPopup('{{ route("page.delete", $data->id )}}')" class="btn btn-danger btn-sm" data-toggle="modal"><i class="ti-trash" aria-hidden="true"></i> Delete</button>
+                                                    @endif
                                                 </td>
                                             </tr>
                                             @endforeach

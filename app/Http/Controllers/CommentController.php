@@ -82,9 +82,9 @@ class CommentController extends Controller
             'name' => $request['name'],
             'username' => $this->createSlug($request['name']),
             'email' => $email,
-            'phone' => $phone,
+            'mobile' => $phone,
             'role_id' => 3,
-            'creator_id' => 0,
+            'created_by' => 0,
             'password' => Hash::make($request['password']),
             'status' => '1',
         ]);

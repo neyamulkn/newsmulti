@@ -31,16 +31,16 @@ class AjaxController extends Controller
 {
     use CreateSlug;
 
-     public function get_subcategoryBy_id($id)
+    public function get_subcategoryBy_id($id)
     {
         $output = '';
-        $get_subcategory= Category::find($id)->subcategory;
+        $get_subcategory = SubCategory::where('category_id', $id)->where('status', 1)->get();
         if(count($get_subcategory)>0){
             $output .= '<div class="form-group">
                            <select onchange="get_district(this.value)" name="subcategory" id="subcategory" class="form-control custom-select">
-                                <option selected value="0">Sub category</option>';
+                                <option selected value="">Sub category</option>';
             foreach($get_subcategory as $show_subcategory){
-                $output .='<option value="'.$show_subcategory->id.'">'.$show_subcategory->subcategory_bd.'</option>';
+                $output .='<option '. (Session::get("subcategory") == $show_subcategory->id ? "selected" : "" ).'  value="'.$show_subcategory->id.'">'.$show_subcategory->subcategory_bd.'</option>';
             }
             $output .=  ' </select>
                         </div>';
@@ -58,7 +58,7 @@ class AjaxController extends Controller
                             <select onchange="get_upzilla(this.value)" name="district" id="district" class="form-control custom-select">
                                 <option selected value="0">'.__('lang.zilla').'</option>';
             foreach($get_districts as $get_district){
-                $output .='<option value="'.$get_district->id.'">'.$get_district->name_bd.'</option>';
+                $output .='<option '. (Session::get("child_cat") == $get_district->id ? "selected" : "" ).'  value="'.$get_district->id.'">'.$get_district->name_bd.'</option>';
             }
             $output .=  ' </select>
                         </div>';
@@ -66,26 +66,25 @@ class AjaxController extends Controller
         echo $output;
     }
 
-
-    public function get_upzilla($id=null)
+    public function get_upazila($id=null)
     {
         $output = '';
         $get_upzilla= Deshjure::where('parent_id', $id)->where('cat_type', 2)->get();
-        if(count($get_upzilla)>0){
+
             $output .= '<div class="form-group">
                             <select name="upzilla" id="upzilla" class="form-control custom-select"><option selected value="0">'.__('lang.upzilla').'</option>';
-            foreach($get_upzilla as $show_upzilla){
-                $output .='<option value="'.$show_upzilla->id.'">'.$show_upzilla->name_bd.'</option>';
+        if(count($get_upzilla)>0) {
+            foreach ($get_upzilla as $show_upzilla) {
+                $output .= '<option ' . (Session::get("subchild_cat") == $show_upzilla->id ? "selected" : "") . '  value="' . $show_upzilla->id . '">' . $show_upzilla->name_bd . '</option>';
             }
+        }
             $output .=  '</select>
                     </div>';
-        }
+
         echo $output;
     }
 
-
    //deshjure search route  // for home page and sitebar
-
    public function deshjure_district($slug)
     {
         $output = '';
@@ -102,7 +101,6 @@ class AjaxController extends Controller
         }
         echo $output;
     }
-
 
     public function deshjure_upzilla($slug)
     {
@@ -172,32 +170,6 @@ class AjaxController extends Controller
         Toastr::error('Please select any image');
         return back();
     }
-    //get sub category by category
-    public function get_subcategory($cat_id){
-        $subcategories = Category::where('parent_id', $cat_id)->get();
-        $output = '';
-        if(count($subcategories)>0){
-            $output .= '<option value="">Select Subcategory</option>';
-            foreach($subcategories as $subcategory){
-                $output .='<option '. (Session::get("subcategory_id") == $subcategory->id ? "selected" : "" ).' value="'.$subcategory->id.'">'.$subcategory->name.'</option>';
-            }
-        }
-        echo $output;
-    }
-
-    // get childcategory by category
-    public function get_subchild_category($subcat_id){
-        $subchildcategories = Category::where('subcategory_id', $subcat_id)->get();
-        $output = '';
-        if(count($subchildcategories)>0){
-            $output .= '<option value="">Select child category</option>';
-            foreach($subchildcategories as $subchildcategory){
-                $output .='<option '. (Session::get("childcategory_id") == $subchildcategory->id ? "selected" : "" ).' value="'.$subchildcategory->id.'">'.$subchildcategory->name.' ('.count($subchildcategory->productsByChildCategory).')</option>';
-            }
-        }
-        echo $output;
-    }
-
 
     // check unique fielde
     public function checkField(Request $request){
@@ -246,7 +218,6 @@ class AjaxController extends Controller
         return response()->json($output);
     }
 
-
     // Status change function
     public function satusActiveDeactive(Request $request){
         $status = DB::table($request->table)->where('id', $request->id)->first();
@@ -291,9 +262,9 @@ class AjaxController extends Controller
             }else{
                 DB::table($request->table)->where('id', $request->id)->update([$field => $value]);
             }
-            $output = array( 'status' => true, 'message' => ' Published successful.');
+            $output = array( 'status' => true, 'message' => ' Approval update successful.');
         }else{
-            $output = array( 'status' => false, 'message' => 'Sorry can\'t published.!');
+            $output = array( 'status' => false, 'message' => 'Sorry can\'t approve.!');
         }
         return response()->json($output);
     }
@@ -311,7 +282,6 @@ class AjaxController extends Controller
         }
         echo 'Position sorting has been updated';
     }
-
 
     public function createUniqueSlug(Request $request, $slug){
         return $this->createSlug($request->table, $slug, $request->field);

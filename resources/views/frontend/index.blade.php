@@ -89,7 +89,7 @@
                                             <div class="news-post standard-post2 ">
                                                 <a href="{{route('news_details', $section_news->news_slug)}}">
                                                     <div class="post-gallery">
-                                                        <img src="{{ asset('upload/images/thumb_img_box/'. $section_news->source_path)}}" alt="">
+                                                        <img src="{{ asset('upload/images/thumb_img/'. $section_news->source_path)}}" alt="">
                                                         @if($section_news->type == 3)
                                                             <a class="play-link" href="{{route('news_details', $section_news->news_slug)}}"><i class="fa fa-play-circle-o"></i></a>
                                                         @elseif($section_news->type == 4)
@@ -210,7 +210,7 @@
                                     <div class="col-md-6" style="margin-bottom: 15px">
                                         <div class="news-post image-post2">
                                             <div class="post-gallery">
-                                                <img src="{{ asset('upload/images/thumb_img_box/'. $national_news->source_path)}}" alt="">
+                                                <img src="{{ asset('upload/images/thumb_img/'. $national_news->source_path)}}" alt="">
                                                 @if($national_news->type == 3)
                                                     <a class="play-link" href="{{route('news_details', $national_news->news_slug)}}"><i class="fa fa-play-circle-o"></i></a>
                                                 @elseif($national_news->type == 4)
@@ -234,7 +234,7 @@
                                     <div class="col-md-6" style="margin-bottom: 15px">
                                         <div class="news-post image-post2">
                                             <div class="post-gallery">
-                                                <img src="{{ asset('upload/images/thumb_img_box/'. $national_news->source_path)}}" alt="">
+                                                <img src="{{ asset('upload/images/thumb_img/'. $national_news->source_path)}}" alt="">
                                                 @if($national_news->type == 3)
                                                     <a class="play-link" href="{{route('news_details', $national_news->news_slug)}}"><i class="fa fa-play-circle-o"></i></a>
                                                 @elseif($national_news->type == 4)
@@ -289,7 +289,7 @@
                                     <div class="col-md-6">
                                         <div class="item news-post standard-post">
                                             <div class="post-gallery">
-                                                <img src="{{ asset('upload/images/thumb_img_box/'. $world_news->source_path)}}" alt="">
+                                                <img src="{{ asset('upload/images/thumb_img/'. $world_news->source_path)}}" alt="">
                                                 @if($world_news->type == 3)
                                                     <a class="play-link" href="{{route('news_details', $world_news->news_slug)}}"><i class="fa fa-play-circle-o"></i></a>
                                                 @elseif($world_news->type == 4)
@@ -343,7 +343,7 @@
                                         <div class="col-md-6 col-sm-6">
                                             <div class="news-post standard-post2">
                                                 <div class="post-gallery">
-                                                    <img src="{{ asset('upload/images/thumb_img_box/'. $sport_news->source_path)}}" alt="">
+                                                    <img src="{{ asset('upload/images/thumb_img/'. $sport_news->source_path)}}" alt="">
                                                     @if($sport_news->type == 3)
                                                         <a class="play-link" class="play-link" href="{{route('news_details', $sport_news->news_slug)}}"><i class="fa fa-play-circle-o"></i></a>
                                                     @elseif($sport_news->type == 4)
@@ -471,7 +471,7 @@
                                     <div class="col-md-6">
                                         <div class="news-post image-post3">
                                             <div class="post-gallery">
-                                                <img src="{{ asset('upload/images/thumb_img_box/'. $show_news->source_path)}}" alt="">
+                                                <img src="{{ asset('upload/images/thumb_img/'. $show_news->source_path)}}" alt="">
                                                 @if($show_news->type == 3)
                                                     <a class="play-link" href="{{route('news_details', $show_news->news_slug)}}"><i class="fa fa-play-circle-o"></i></a>
                                                 @elseif($show_news->type == 4)
@@ -524,7 +524,7 @@
                                     <div class="col-md-6">
                                         <div class="news-post image-post3">
                                             <div class="post-gallery">
-                                                <img src="{{ asset('upload/images/thumb_img_box/'. $show_news->source_path)}}" alt="">
+                                                <img src="{{ asset('upload/images/thumb_img/'. $show_news->source_path)}}" alt="">
                                                 @if($show_news->type == 3)
                                                     <a class="play-link" href="{{route('news_details', $show_news->news_slug)}}"><i class="fa fa-play-circle-o"></i></a>
                                                 @elseif($show_news->type == 4)
@@ -586,7 +586,7 @@
                                     <div class="col-md-12">
                                         <div class="item news-post standard-post">
                                             <div class="post-gallery">
-                                                <img src="{{ asset('upload/images/thumb_img_box/'. $technology_news->source_path)}}" alt="">
+                                                <img src="{{ asset('upload/images/thumb_img/'. $technology_news->source_path)}}" alt="">
                                                 @if($technology_news->type == 3)
                                                     <a class="play-link" href="{{route('news_details', $technology_news->news_slug)}}"><i class="fa fa-play-circle-o"></i></a>
                                                 @elseif($technology_news->type == 4)
@@ -633,7 +633,7 @@
                                     <div class="col-md-12">
                                         <div class="item news-post standard-post">
                                             <div class="post-gallery">
-                                                <img src="{{ asset('upload/images/thumb_img_box/'. $accidente_news->source_path)}}" alt="">
+                                                <img src="{{ asset('upload/images/thumb_img/'. $accidente_news->source_path)}}" alt="">
                                                 @if($accidente_news->type == 3)
                                                     <a class="play-link" href="{{route('news_details', $accidente_news->news_slug)}}"><i class="fa fa-play-circle-o"></i></a>
                                                 @elseif($accidente_news->type == 4)
@@ -679,7 +679,7 @@
                                     <div class="col-md-12">
                                         <div class="item news-post standard-post">
                                             <div class="post-gallery">
-                                                <img src="{{ asset('upload/images/thumb_img_box/'. $education_news->source_path)}}" alt="">
+                                                <img src="{{ asset('upload/images/thumb_img/'. $education_news->source_path)}}" alt="">
                                                 @if($education_news->type == 3)
                                                     <a class="play-link" href="{{route('news_details', $education_news->news_slug)}}"><i class="fa fa-play-circle-o"></i></a>
                                                 @elseif($education_news->type == 4)
@@ -724,7 +724,7 @@
                                     <div class="col-md-12">
                                         <div class="item news-post standard-post">
                                             <div class="post-gallery">
-                                                <img src="{{ asset('upload/images/thumb_img_box/'. $health_news->source_path)}}" alt="">
+                                                <img src="{{ asset('upload/images/thumb_img/'. $health_news->source_path)}}" alt="">
                                                 @if($health_news->type == 3)
                                                     <a class="play-link" href="{{route('news_details', $health_news->news_slug)}}"><i class="fa fa-play-circle-o"></i></a>
                                                 @elseif($health_news->type == 4)
@@ -780,7 +780,7 @@
                                             @if($i<=3)
                                             <li>
                                                 <div class="news-post image-post">
-                                                    <img src="{{ asset('upload/images/thumb_img_box/'. $picture_voice->source_path)}}" alt="">
+                                                    <img src="{{ asset('upload/images/thumb_img/'. $picture_voice->source_path)}}" alt="">
                                                     <div class="hover-box">
                                                         <div class="inner-hover">
 
@@ -862,7 +862,7 @@
                                     <div class="col-md-6">
                                         <div class="news-post image-post2">
                                             <div class="post-gallery">
-                                                <img src="{{ asset('upload/images/thumb_img_box/'. $show_news->source_path)}}"  alt="">
+                                                <img src="{{ asset('upload/images/thumb_img/'. $show_news->source_path)}}"  alt="">
                                                 <div class="hover-box">
                                                     @if($show_news->type == 3)
                                                         <a class="play-link" href="{{route('news_details', $show_news->news_slug)}}"><i class="fa fa-play-circle-o"></i></a>
@@ -946,7 +946,7 @@
                                         <div class="col-md-12">
                                             <div class="item news-post standard-post">
                                                 <div class="post-gallery">
-                                                    <img src="{{ asset('upload/images/thumb_img_box/'. $show_news->source_path)}}" alt="">
+                                                    <img src="{{ asset('upload/images/thumb_img/'. $show_news->source_path)}}" alt="">
                                                 </div>
                                                 <div class="post-content">
                                                     <h2><a href="{{route('news_details', $show_news->news_slug)}}">{{Str::limit($show_news->news_title, 80)}}</a></h2>
@@ -983,7 +983,7 @@
                                     <div class="col-md-12">
                                         <div class="item news-post standard-post">
                                             <div class="post-gallery">
-                                                <img src="{{ asset('upload/images/thumb_img_box/'. $life_style->source_path)}}" alt="">
+                                                <img src="{{ asset('upload/images/thumb_img/'. $life_style->source_path)}}" alt="">
                                             </div>
                                             <div class="post-content">
                                                 <h2><a href="{{route('news_details', $life_style->news_slug)}}">{{Str::limit($life_style->news_title, 80)}}</a></h2>
@@ -1020,7 +1020,7 @@
                                     <div class="col-md-12">
                                         <div class="item news-post standard-post">
                                             <div class="post-gallery">
-                                                <img src="{{ asset('upload/images/thumb_img_box/'. $provash_news->source_path)}}" alt="">
+                                                <img src="{{ asset('upload/images/thumb_img/'. $provash_news->source_path)}}" alt="">
                                             </div>
 
                                             <div class="post-content">
@@ -1056,7 +1056,7 @@
                                     <div class="col-md-12">
                                         <div class="item news-post standard-post">
                                             <div class="post-gallery">
-                                                <img src="{{ asset('upload/images/thumb_img_box/'. $travel_news->source_path)}}" alt="">
+                                                <img src="{{ asset('upload/images/thumb_img/'. $travel_news->source_path)}}" alt="">
 
                                             </div>
 

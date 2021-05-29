@@ -41,13 +41,20 @@ color: white;}
                             <li><span class="time-now">{{$convertedDATE}} | @include('frontend.layouts.banglayear')</span></li>
                        </ul>
                     </div>
-                    <div class="col-md-6" style="width: 48%;float: right;">
+                    <div class="col-md-8" style="width: 68%;float: right;">
                         
                         <ul class="social-icons">
                             
                             <li><a style="color:#0fe8d2;font-weight:500" href="{{url('advertising')}}"><i class="menu-style fa fa-bullhorn"></i> বিজ্ঞাপন </a></li>
                             <li><a style="color:#0fe8d2;font-weight:500" href="http://facebook.com/bdtype"><i class="menu-style fa fa-archive"></i> আর্কাইভ  </a></li>
                             <li><a style="color:#0fe8d2;font-weight:500" href="http://facebook.com/bdtype"><i class="menu-style fa fa-calendar"></i> কুইজ  </a></li>
+                            @if(Auth::guard('admin')->check())
+                            <li><a href="{{route('admin.dashboard')}}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+                            @elseif(Auth::guard('reporter')->check())
+                            <li><a href="{{route('reporter.dashboard')}}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+                            @else
+
+                            @endif
 
                             @guest
                             <li style="padding: 0px 5px;border: 1px solid #00fae1; border-radius: 10px;"><a class="" href="{{route('login')}}"><i class="fa fa-lock" aria-hidden="true"></i> Login</a></li>
@@ -72,35 +79,6 @@ color: white;}
                                         @endif
                                         @endif
 
-                                        @if($notification->type == env('COMMENT'))
-                                            @if($notification->comment && $notification->comment->news)
-                                            <li class="notification">
-                                                <a onclick="readNotify('{{$notification->id}}')" href="{{route('comments',$notification->comment->news->news_slug)}}#singleComment{{$notification->item_id}}">
-                                                <img src="{{asset('upload/images/users/thumb_image/'.$notification->user->image)}}"><strong>{{$notification->user->username}} </strong>- {{$notification->notify}}
-                                                <p style="color: #969696"><i class="fa fa-clock-o"> </i> {{$notification->created_at->diffForHumans()}}</p>
-                                                <p>{{Str::limit($notification->comment->comments, 20)}}</p>
-                                                </a>
-                                            </li> 
-                                            @endif
-                                        @endif
-                                       
-
-                                        @if($notification->type == env('REPORTER_NOTIFY'))
-                                        @if($notification->user)
-                                            <li class="notification">
-                                                @if(Auth::user()->role_id != env('ADMIN'))
-                                                <a onclick="readNotify('{{$notification->id}}')" href="{{route('user_profile', $notification->user->username)}}">
-                                                @endif
-                                                @if(Auth::user()->role_id == env('ADMIN'))
-                                                <a onclick="readNotify('{{$notification->id}}')" href="{{route('reporterRequest.list')}}">
-                                                @endif
-                                                <img src="{{asset('upload/images/users/thumb_image/'.$notification->user->image)}}"><strong>{{$notification->user->username}} </strong>- {{$notification->notify}}
-                                                <p style="color: #969696"><i class="fa fa-clock-o"> </i> {{$notification->created_at->diffForHumans()}}</p>
-                                               
-                                                </a>
-                                            </li> 
-                                        @endif
-                                        @endif
                                     @endforeach
                                     @if(count($notifications)>6)
                                     <li><a href="{{route('notifications')}}"> Show All </a></li>
@@ -111,10 +89,8 @@ color: white;}
                                 <button class="profileBtn dropdown-toggle" type="button" data-toggle="dropdown"><i class="fa fa-user"></i>
                                 <span class="caret"></span></button>
                                 <ul class="dropdown-menu">
-                                    @if(Auth::user()->role_id != 3)
-                                    <li><a href="{{route('dashboard')}}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-                                    @endif
-                                    <li><a href="{{route('user_profile', Auth::user()->username)}}"><i class="fa fa-user" aria-hidden="true"></i> My Profile</a></li>
+                                    
+                                    <li><a href="{{route('user.myProfile')}}"><i class="fa fa-user" aria-hidden="true"></i> My Profile</a></li>
 
                                     <li><a href="#"><i class="fa fa-envelope-o"></i> Inbox</a></li>
 
@@ -131,6 +107,7 @@ color: white;}
                                     </li>
                                 </ul>
                             </li>
+                           
                             @endguest
                             @php
                               if(!Session::has('socialLists')){
@@ -215,15 +192,15 @@ color: white;}
 
                             <ul class="collapse list-unstyled" class="collapse list-unstyled" id="profile">
                                 @if(Auth::user()->role_id != 3)
-                                <li><a href="{{route('dashboard')}}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+                                <li><a href="{{route('user.dashboard')}}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
                                 @endif
-                                <li><a href="{{route('user_profile', Auth::user()->username)}}"><i class="fa fa-user" aria-hidden="true"></i> My Profile</a></li>
+                                <li><a href="{{route('user.myProfile')}}"><i class="fa fa-user" aria-hidden="true"></i> My Profile</a></li>
 
                                 <li><a href="#"><i class="fa fa-envelope-o"></i> Inbox</a></li>
 
-                                <li><a href="{{route('viewReadLater',  Auth::user()->username)}}"><i class="fa fa-book" aria-hidden="true"></i> Read Later</a></li>
+                                <li><a href="{{route('viewReadLater')}}"><i class="fa fa-book" aria-hidden="true"></i> Read Later</a></li>
                                 <li><a href="#"><i class="fa fa-external-link" aria-hidden="true"></i> Forum</a></li>
-                                <li><a href="{{route('viewReadLater',  Auth::user()->username)}}"><i class="fa fa-cog"></i> Setting</a></li>
+                                <li><a href="{{route('viewReadLater')}}"><i class="fa fa-cog"></i> Setting</a></li>
                                 <li class="divider"></li>
                                 <li><a  href="{{ route('logout') }}" onclick="event.preventDefault();
                                     document.getElementById('logout-form').submit();" class="dropdown-item"><i class="fa fa-power-off"></i> Logout</a>

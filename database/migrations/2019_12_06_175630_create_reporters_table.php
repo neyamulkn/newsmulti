@@ -14,18 +14,29 @@ class CreateReportersTable extends Migration
     public function up()
     {
         Schema::create('reporters', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->tinyInteger('user_id');
-            $table->char('designation', 25)->nullable();
-            $table->char('father_name', 35)->nullable();
-            $table->char('mother_name', 35)->nullable();
-            $table->char('present_address', 255)->nullable();
-            $table->char('permanent_address', 255)->nullable();
+            $table->id();
+            $table->integer('user_id');
+            $table->string('designation', 25)->nullable();
+            $table->string('profession', 125)->nullable();
+            $table->string('father_name', 35)->nullable();
+            $table->string('mother_name', 35)->nullable();
+            $table->string('present_address', 255)->nullable();
+            $table->integer('present_zilla')->nullable();
+            $table->integer('present_upzilla')->nullable();
+            $table->string('permanent_address', 255)->nullable();
+            $table->integer('permanent_zilla')->nullable();
+            $table->integer('permanent_upzilla')->nullable();
+            $table->integer('working_zilla')->nullable();
+            $table->integer('working_upzilla')->nullable();
             $table->date('appointed_date')->nullable();
+            $table->string('emg_contact_name', 125)->nullable();
+            $table->string('emg_contact_phone', 25)->nullable();
+            $table->string('emg_contact_rel', 25)->nullable();
+            $table->string('emg_contact_address', 255)->nullable();
             $table->bigInteger('national_id')->nullable();
-            $table->char('profession', 125)->nullable();
-            $table->char('resume', 125)->nullable();
-            $table->char('status', 125)->nullable();
+            $table->string('national_attach')->nullable();
+            $table->string('resume', 255)->nullable();
+            $table->string('status', 15)->default('pending');
             $table->timestamps();
         });
     }

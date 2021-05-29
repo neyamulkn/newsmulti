@@ -15,19 +15,19 @@ use Intervention\Image\Facades\Image;
 class MediaGalleryController extends Controller
 {
 
-     public function phato_list(){
+     public function photo_list(){
         $user_id = Auth::user()->id;
         $get_data = MediaGallery::where('type', 1);
         if(Auth::user()->role_id != env('ADMIN')){
             $get_data->where('user_id', $user_id);
         }
          $get_data =  $get_data->orderBy('id', 'DESC')->paginate(25);
-        return view('backend.phato-gallery')->with(compact('get_data'));
+        return view('backend.gallery.photo-gallery')->with(compact('get_data'));
     }
 
-    public function phato_upload(Request $request){
+    public function photo_upload(Request $request){
         $rules = array(
-            'phato'  => 'mimes:jpeg,jpg,png,gif|required|max:2024'
+            'photo'  => 'mimes:jpeg,jpg,png,gif|required|max:2024'
         );
 
         $error = Validator::make($request->all(), $rules);
@@ -38,14 +38,13 @@ class MediaGalleryController extends Controller
         }
         $user_id = Auth::user()->id;
         $image_name = null;
-        if($request->hasFile('phato')){
-            $image = $request->file('phato');
+        if($request->hasFile('photo')){
+            $image = $request->file('photo');
             $image_name = $this->uniquePath($image->getClientOriginalName());
             $image_path = public_path('upload/images/thumb_img/'.$image_name );
             $image_resize = Image::make($image);
             $image_resize->resize(200, 115);
             $image_resize->save($image_path);
-
 
             // Add water mark in image
             $img = Image::make($image->getRealPath());
@@ -65,13 +64,7 @@ class MediaGalleryController extends Controller
             //overrite image or new name choose
             $img->save(public_path('upload/images/watermark/'. $image_name));
 
-
-            $image_path = public_path('upload/images/thumb_img_box/'.$image_name );
-            $image_resize = Image::make($image);
-            $image_resize->resize(420, 275);
-            $image_resize->save($image_path);
-
-            $image_path = public_path('upload/images/'.$image_name );
+            $image_path = public_path('upload/images/news/'.$image_name );
             Image::make($image)->save($image_path);
         }
 
@@ -84,25 +77,32 @@ class MediaGalleryController extends Controller
         $insert = MediaGallery::create($data);
         $output = array(
              'success' => $insert->id,
-             'image'  => '<input class="dropify" id="input-file-disable-remove" data-show-remove="false" data-default-file="'.asset('upload/images/'.$image_name).'">'
+             'image'  => '<input class="dropify" id="input-file-disable-remove" data-show-remove="false" data-default-file="'.asset('upload/images/news/'.$image_name).'">'
             );
        return response()->json($output);
     }
 
-    public function phato_edit($id)
+    public function photo_edit($id)
     {
         $data = MediaGallery::find($id);
-        echo view('backend.edit-form.phato-edit')->with(compact('data'));
+        echo view('backend.gallery.edit.photo-gallery')->with(compact('data'));
     }
 
-    public function phato_update(Request $request)
+    public function photo_update(Request $request)
     {
         $check = MediaGallery::find($request->id);
         if($check){
             $user_id = Auth::user()->id;
             $image_name = null;
-            if($request->hasFile('phato')){
-                $image = $request->file('phato');
+            if($request->hasFile('photo')){
+                //If photo exits, delete photo from folder
+                $source_path = public_path('upload/images/'.$check->source_path);
+                if(file_exists($source_path)){
+                    unlink($source_path);
+                    unlink(public_path('upload/images/thumb_img/'.$check->source_path));
+                }
+
+                $image = $request->file('photo');
                 $image_name = $this->uniquePath($image->getClientOriginalName());
 
                 $image_path = public_path('upload/images/thumb_img/'.$image_name );
@@ -126,13 +126,7 @@ class MediaGalleryController extends Controller
                 //overrite image or new name choose
                 $img->save(public_path('upload/images/watermark/'. $image_name));
 
-
-                $image_path = public_path('upload/images/thumb_img_box/'.$image_name );
-                $image_resize = Image::make($image);
-                $image_resize->resize(420, 275);
-                $image_resize->save($image_path);
-
-                $image_path = public_path('upload/images/'.$image_name );
+                $image_path = public_path('upload/images/news/'.$image_name );
                 Image::make($image)->save($image_path);
 
                 $data = [
@@ -142,11 +136,7 @@ class MediaGalleryController extends Controller
                     'user_id' => $user_id,
                 ];
 
-                $source_path = public_path('upload/images/'.$check->source_path);
-                if(file_exists($source_path)){ //If it exits, delete it from folder
-                    unlink($source_path);
-                    unlink(public_path('upload/images/thumb_img/'.$check->source_path));
-                }
+
             }else{
                 $data = [
                     'title' => $request->title,
@@ -169,35 +159,35 @@ class MediaGalleryController extends Controller
 
     }
 
-    public function phato_delete($id)
+    public function photo_delete($id)
     {
         $check = MediaGallery::find($id);
         if($check){
-            $source_path = public_path('upload/images/'.$check->source_path);
+            $source_path = public_path('upload/images/news/'.$check->source_path);
             if(file_exists($source_path)){ //If it exits, delete it from folder
                 unlink($source_path);
                 unlink(public_path('upload/images/thumb_img/'.$check->source_path));
             }
             $delete =  $check->delete();
-           
+
             $output = [
                 'status' => true,
-                'msg' => 'Phato deleted successfully.'
+                'msg' => 'Photo deleted successfully.'
             ];
 
         }else{
             $output = [
                 'status' => false,
-                'msg' => 'Sorry Phato cann\'t deleted.'
+                'msg' => 'Sorry photo cann\'t deleted.'
             ];
         }
         return response()->json($output);
     }
 
- 
-     // upload  desciption inner phato CKEditor 
 
-    public function phato_uploadCKEditor(Request $request){
+     // upload  desciption inner photo CKEditor
+
+    public function photo_uploadCKEditor(Request $request){
 
         $user_id = Auth::user()->id;
         $image_name = $message = $url = null;
@@ -213,8 +203,8 @@ class MediaGalleryController extends Controller
             $message = 'Invalid image selected.';
             return "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction($function_number, '$url', '$message');</script>";
         }
-        
-       
+
+
         if($request->hasFile('upload')){
             $image = $request->file('upload');
             $image_name = $this->uniquePath($image->getClientOriginalName());
@@ -223,12 +213,7 @@ class MediaGalleryController extends Controller
             $image_resize->resize(200, 115);
             $image_resize->save($image_path);
 
-            $image_path = public_path('upload/images/thumb_img_box/'.$image_name );
-            $image_resize = Image::make($image);
-            $image_resize->resize(420, 275);
-            $image_resize->save($image_path);
-
-            $image_path = public_path('upload/images/'.$image_name );
+            $image_path = public_path('upload/images/news/'.$image_name );
             Image::make($image)->save($image_path);
 
             // CKEditor url
@@ -241,26 +226,24 @@ class MediaGalleryController extends Controller
                 'user_id' => $user_id,
             ];
             $insert = MediaGallery::create($data);
-           
+
         }else{
             $message = 'No image uploaded.';
         }
 
         return "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction($function_number, '$url', '$message');</script>";
- 
+
     }
 
 
     public function video_list(){
-        $user_id = Auth::user()->id;
-        $get_data = MediaGallery::where('type', 2)->where('user_id', $user_id)->get();
-        return view('backend.video-gallery')->with(compact('get_data'));
+
+        $get_data = MediaGallery::where('type', 2)->orderBy('id', 'DESC')->get();
+        return view('backend.gallery.video-gallery')->with(compact('get_data'));
     }
 
     public function video_upload(Request $request){
 
-
-// dd($request->all());
         $user_id = Auth::user()->id;
 
         $rules = array(
@@ -276,7 +259,7 @@ class MediaGalleryController extends Controller
 
         if($request->hasFile('video')){
             $video = $request->file('video');
-            $video_path = time().rand('123456', '999999').".".$video->getClientOriginalExtension();
+            $video_path = $this->uniquePath($video->getClientOriginalName());
             $path = public_path('upload/videos/'); // video upload ar time a path seperate dete hoy
             $video->move($path, $video_path);
         }
@@ -297,7 +280,7 @@ class MediaGalleryController extends Controller
     public function video_edit($id)
     {
         $data = MediaGallery::find($id);
-        echo view('backend.edit-form.video-edit')->with(compact('data'));
+        echo view('backend.gallery.edit.video-edit')->with(compact('data'));
     }
 
     public function video_update(Request $request)
@@ -310,8 +293,13 @@ class MediaGalleryController extends Controller
             ]);
 
             if($request->hasFile('video')){
+                //If it exits, delete it from folder
+                $source_path = public_path('upload/videos/'.$check->source_path);
+                if(file_exists($source_path)){
+                    unlink($source_path);
+                }
                 $video = $request->file('video');
-                $video_path = time().rand('123456', '999999').".".$video->getClientOriginalExtension();
+                $video_path = $this->uniquePath($video->getClientOriginalName());
                 $path = public_path('upload/videos/'); // video upload ar time a path seperate dete hoy
                 $video->move($path, $video_path);
 
@@ -320,11 +308,6 @@ class MediaGalleryController extends Controller
                     'source_path' => $video_path,
                     'user_id' => $user_id,
                 ];
-
-                $source_path = public_path('upload/videos/'.$check->source_path);
-                if(file_exists($source_path)){ //If it exits, delete it from folder
-                    unlink($source_path);
-                }
             }else{
                 $data = [
                     'title' => $request->title,
@@ -334,13 +317,13 @@ class MediaGalleryController extends Controller
 
             $update = MediaGallery::where('id', $request->id)->update($data);
             if($update){
-                Toastr::success('video update successfully.');
+                Toastr::success('video update successful.');
             }else{
                 Toastr::success('Sorry video cann\'t updated.');
             }
 
         }else{
-            Toastr::error('Sorry video cann\'t updated.');
+            Toastr::error('Sorry video can\'t update.');
         }
 
         return back();
@@ -356,11 +339,19 @@ class MediaGalleryController extends Controller
                 unlink($source_path);
             }
             $delete =  $check->delete();
-            echo 'video deleted successfully.';
+
+            $output = [
+                'status' => true,
+                'msg' => 'Video deleted successful.'
+            ];
 
         }else{
-           echo 'Sorry video cann\'t deleted.';
+            $output = [
+                'status' => false,
+                'msg' => 'Sorry Video cann\'t deleted.'
+            ];
         }
+        return response()->json($output);
     }
 
     public function uniquePath($path)
@@ -370,7 +361,7 @@ class MediaGalleryController extends Controller
 
         if (count($check_path)>0){
             //find slug until find not used.
-            for ($i = 1; $i <= count($check_path); $i++) {
+            for ($i = 1; $i <= count($check_path)+1; $i++) {
                 $newPath = $i.'-'.$path;
                 if (!$check_path->contains('source_path', $newPath)) {
                     return $newPath;
@@ -379,19 +370,4 @@ class MediaGalleryController extends Controller
         }else{ return $path; }
     }
 
-//    public function createSlug($slug)
-//    {
-//        $slug = Str::slug($slug);
-//        $check_slug = News::select('product_url')->where('product_url', 'like', $slug.'%')->get();
-//
-//        if (count($check_slug)>0){
-//            //find slug until find not used.
-//            for ($i = 1; $i <= count($check_slug); $i++) {
-//                $newSlug = $slug.'-'.$i;
-//                if (!$check_slug->contains('product_url', $newSlug)) {
-//                    return $newSlug;
-//                }
-//            }
-//        }else{ return $slug; }
-//    }
 }

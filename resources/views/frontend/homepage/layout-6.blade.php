@@ -5,7 +5,7 @@ $section_items = App\Models\HomepageSectionItem::where('section_id', $section->i
 
 if($section->section_type == 'category' || $section->section_type == 'country-wide'){
     $section_items->with(['newsByCategory' => function ($query) {
-    $query->where('status', '=', 1)->orderBy('id', 'desc'); }, 'newsByCategory.image', 'newsByCategory.getCategory:id,category_bd,category_en', 'newsByCategory.subcategoryList:id,subcategory_bd,subcategory_en']);
+    $query->where('status', '=', 'active')->orderBy('id', 'desc'); }, 'newsByCategory.image', 'newsByCategory.getCategory:id,category_bd,category_en', 'newsByCategory.subcategoryList:id,subcategory_bd,subcategory_en']);
 }   
 
 $section_items = $section_items->orderBy('position', 'asc')->get();

@@ -5,11 +5,26 @@ body{font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;}
 .page-titles {padding: 5px 10px; margin: 0 -20px 10px !important;}
 .page-titles .breadcrumb{float: left;}
 .page-titles .d-none{display: initial !important;}
-.sidebar-nav>ul>li{margin: 0;}
+.sidebar-nav>ul>li.active{margin: 0;background: #eaeef2;}
+.collapse.in{background: #000000b3;}
 .sidebar-nav>ul>li.active>a {background: #343a400a;}
 .sidebar-nav ul li a:hover {background: #343a400a}
 .title_head{
     width: 100%; margin-bottom: 10px; background: #8d8f90; color:#fff; padding: 8px;
+}
+
+@media screen and (min-width: 640px) {
+    .divrigth_border::after {
+        content: '';
+        width: 0;
+        height: 100%;
+        margin: -1px 0px;
+        position: absolute;
+        top: 0;
+        left: 100%;
+        margin-left: 0px;
+        border-right: 3px solid #e5e8ec;
+    }
 }
 .info{font-size: 12px;color: red}
 /*input field required */

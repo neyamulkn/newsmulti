@@ -47,8 +47,8 @@ class RouteServiceProvider extends ServiceProvider
         // for admin route
         $this->adminRoutes();
 
-        // for vendor route
-        $this->vendorRoutes();
+        // for reporter route
+        $this->reporterRoutes();
         // for staff route
         $this->staffRoutes();
 
@@ -101,12 +101,12 @@ class RouteServiceProvider extends ServiceProvider
             ->group(base_path('routes/adminRoutes.php'));
     }
 
-    // for vendor route
-    protected function vendorRoutes()
+    // for reporter route
+    protected function reporterRoutes()
     {
         Route::middleware('web')
             ->namespace($this->namespace)
-            ->group(base_path('routes/vendorRoutes.php'));
+            ->group(base_path('routes/reporterRoutes.php'));
     }
 
     // for staff route

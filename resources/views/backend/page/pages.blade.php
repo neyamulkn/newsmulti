@@ -100,7 +100,7 @@
                                             <div class="form-group">
                                                 <label for="menu">Menu</label>
                                                 <select name="menu"  required="required" id="menu" class="form-control custom-select">
-                                                    <option></option>
+                                                    <option value="all">All</option>
                                                     <option value="1" {{ (old('menu') ==1) ? 'selected' : '' }}> Header Top</option>
                                                     <option value="2" {{ (old('menu') ==2) ? 'selected' : '' }}>Main Menu</option>
                                                     <option value="3" {{ (old('menu') ==3) ? 'selected' : '' }}>Footer Menu</option>
@@ -133,7 +133,7 @@
                             </div>
                         </div>
                             <div class="form-actions">
-                                <button type="submit" class="btn btn-success"> <i class="fa fa-save"></i>Create page</button>
+                                <button type="submit" class="btn btn-success"> <i class="fa fa-save"></i> Create page</button>
 
                                 <button type="reset" class="btn waves-effect waves-light btn-secondary">Cancel</button>
                             </div>

@@ -20,7 +20,7 @@ class HomepageSectionItemController extends Controller
 
     public function index($slug)
     {
-        
+
         $data['section'] = HomepageSection::where('slug', $slug)->first();
 
         $sectionItems = HomepageSectionItem::where('section_id', $data['section']->id);
@@ -36,11 +36,11 @@ class HomepageSectionItemController extends Controller
         if($data['section']->section_type == 'ads'){
             $sectionItems->with('ads_details');
             //get Addvertisement
-            $data['allAds'] = Addvertisement::orderBy('id', 'desc')->where('status', 1)->get();
+            $data['allAds'] = Addvertisement::orderBy('id', 'desc')->where('status', 1)->paginate(15);
         }
         $data['sectionItems'] = $sectionItems->orderBy('position', 'asc')->get();
 
-      
+
         return view('backend.homepage.sectionItem.'.$data['section']->section_type)->with($data);
     }
 
@@ -53,7 +53,7 @@ class HomepageSectionItemController extends Controller
             $keyword = $request->item;
             $item->Where('news_title', 'like', '%' . $keyword . '%');
         }
-     
+
 
         if ($request->category && $request->category != 'all') {
             $item->where('category_id', $request->category);
@@ -178,7 +178,7 @@ class HomepageSectionItemController extends Controller
             $section->item_id = $item_id;
         }
 
-    
+
         $section->status = ($request->status ? 1 : 0);
         $store = $section->save();
 
@@ -242,5 +242,5 @@ class HomepageSectionItemController extends Controller
         }
         return response()->json($output);
     }
- 
+
 }

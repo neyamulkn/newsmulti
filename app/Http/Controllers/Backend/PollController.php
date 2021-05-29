@@ -7,8 +7,8 @@ use App\Models\Poll;
 use App\Models\PollQuestionAns;
 use App\User;
 use Illuminate\Http\Request;
-use Auth;
-use Toastr;
+use Illuminate\Support\Facades\Auth;
+use Brian2694\Toastr\Facades\Toastr;
 class PollController extends Controller
 {
 
@@ -56,7 +56,8 @@ class PollController extends Controller
 
     public function edit($poll_id)
     {
-        $poll = Poll::find($poll_id);
+        $poll = Poll::with('pollOptions')->where('id', $poll_id)->first();
+
         return view('backend.poll.edit')->with(compact('poll'));
     }
 
@@ -73,8 +74,23 @@ class PollController extends Controller
         $poll->login_status = ($request->login_status) ? 1 : 0;
         $poll->status = ($request->status) ? 1 : 0;
         $update = $poll->save();
-      
+
         if($update){
+            //update option
+            if(!empty($request->editoptions)){
+                $pollOption = $ids = [];
+                foreach($request->editoptions as $id => $option){
+                    if($option) {
+                        $ids[] = $id;
+                        $pollOption[] = ['id' => $id, 'poll_id' => $poll->id, 'option' => $option ];
+                    }
+                }
+
+                if ( !empty(array_filter($pollOption))) {
+                    PollQuestionAns::upsert($pollOption, ['id']);
+                }
+            }
+            //insert new option
             if(!empty($request->options)){
                 $pollOption = [];
                 foreach($request->options as $option){
@@ -88,7 +104,7 @@ class PollController extends Controller
             }
             Toastr::success('Poll update success.', 'success');
         }else{
-             Toastr::error('Poll update failed!.', 'error');
+            Toastr::error('Poll update failed!.', 'error');
         }
 
         return back();
@@ -111,6 +127,35 @@ class PollController extends Controller
             ];
         }
         return response()->json($output);
+    }
+    // delete poll option
+    public function pollOptionDelete($id)
+    {
+        $delete =  PollQuestionAns::find($id);
+        if($delete){
+            $delete->delete();
+            $output = [
+                'status' => true,
+                'msg' => 'Poll option delete successfull.'
+            ];
+
+        }else{
+            $output = [
+                'status' => false,
+                'msg' => 'Sorry poll option can\'t deleted.'
+            ];
+        }
+        return response()->json($output);
+    }
+
+    //poll result
+    public function pollResult($poll_id){
+        $results =  PollQuestionAns::where('poll_id',$poll_id)->get();
+        if($results){
+            return view('backend.poll.result')->with(compact('results'));
+        }else{
+            return '<p style="color:red">Poll Option not set.!</p>';
+        }
     }
 
 }

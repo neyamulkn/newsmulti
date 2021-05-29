@@ -28,7 +28,7 @@ color: white;}
         <div class="top-line" style="overflow: initial;">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-3" style="width: 22%">
+                    <div class="col-md-3" style="width: 25%">
                         <ul class="top-line-list">
                             <?PHP
 

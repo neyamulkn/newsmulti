@@ -1,43 +1,47 @@
 @extends('frontend.layouts.master')
-@section('title')
-  @if($subchild_cat) {{ $subchild_cat->name_bd }} | @endif @if($child_cat) {{ $child_cat->name_bd }} | @endif @if($subcategory) {{ $subcategory->subcategory_bd}} | @endif  {{$category->category_bd}} | বিডি টাইপ
+@section('title') @if($subchild_cat) {{ $subchild_cat->name_bd }} | @endif @if($child_cat) {{ $child_cat->name_bd }} | @endif @if($subcategory) {{ $subcategory->subcategory_bd}} | @endif  {{$category->category_bd}} | {{Config::get('siteSetting.site_name')}}
 @endsection
+@php
+
+    if($subcategory) { $meta_title = $subcategory->meta_title; $meta_keywords = $subcategory->keywords; $meta_tags = $subcategory->meta_tags; $meta_desciption = $subcategory->meta_desciption;}
+    else{
+       $meta_title = $category->meta_title; $meta_keywords = $category->keywords; $meta_tags = $category->meta_tags; $meta_desciption = $category->meta_desciption;
+    }
+    @endphp
 @section('MetaTag')
-    <meta name="description" content="Online Latest Bangla News/Article - Sports, Crime, Entertainment, Business, Politics, Education, Opinion, Lifestyle, Photo, Video, Travel, National, World">
-
-    <meta name="keywords" content="bdtype, bangla news, current News, bangla newspaper, bangladesh newspaper, online paper, bangladeshi newspaper, bangla news paper, bangladesh newspapers, newspaper, all bangla news paper, bd news paper, news paper, bangladesh news paper, daily, bangla newspaper, daily news paper, bangladeshi news paper, bangla paper, all bangla newspaper, bangladesh news, daily newspaper, web design, bangla paper, add post, how to use wordpress, wordpress add post, wordpress tutorials, adding wordpress post, wordpress posts, wordpress, wordpress tutorial, word press basics, wordpress basics, marketing, blogger (website), blog (industry), web design (interest), create wordpress, wordpress blog entry, wordpress blog, word press, wordpress (blogger), daily newspaper, bangladesh news, all bangla newspaper, wordpress user guide, bangladeshi news paper, daily news paper, daily, bangladesh news paper, news paper, bd news paper, all bangla news paper, newspaper, bangladesh newspapers, bangla news paper, bangladeshi newspaper, online paper, bangladesh newspaper, bangla newspaper, current news" />
-
+    <meta name="title" content="{{ $meta_title }}">
+    <meta name="description" content="{{$meta_desciption}}">
+    <meta name="keywords" content="{{$meta_keywords}}" />
     <meta name="robots" content="index,follow" />
     <link rel="canonical" href="{{ url()->full() }}">
     <link rel="amphtml" href="{{ url()->full() }}" />
     <link rel="alternate" href="{{ url()->full() }}">
 
-        <!-- Schema.org for Google -->
-
-    <meta itemprop="description" content="Online Latest Bangla News/Article - Sports, Crime, Entertainment, Business, Politics, Education, Opinion, Lifestyle, Photo, Video, Travel, National, World">
-    <meta itemprop="image" content="{{ asset('frontend')}}/images/logo-black.png">
-
-        <!-- Twitter -->
-    <meta name="twitter:card" content="Online Latest Bangla News/Article - Sports, Crime, Entertainment, , Business, Politics, Education, Opinion, Lifestyle, Photo, Video, Travel, National, World">
-    <meta name="twitter:title" content="Online Latest Bangla News/Article - Sports, Crime, Entertainment, , Business, Politics, Education, Opinion, Lifestyle, Photo, Video, Travel, National, World">
-    <meta name="twitter:description" content="Online Latest Bangla News/Article - Sports, Crime, Entertainment, Business, Politics, Education, Opinion, Lifestyle, Photo, Video, Travel, National, World">
-    <meta name="twitter:site" content="{{url('/')}}">
-    <meta name="twitter:creator" content="@Bdtype">
-    <meta name="twitter:image:src" content="{{ asset('frontend')}}/images/logo-black.png">
-    <meta name="twitter:player" content="#">
-    <!-- Twitter - Product (e-commerce) -->
-
     <!-- Open Graph general (Facebook, Pinterest & Google+) -->
-    <meta name="og:description" content="Online Latest Bangla News/Article - Sports, Crime, Entertainment, Business, Politics, Education, Opinion, Lifestyle, Photo, Video, Travel, National, World">
-    <meta name="og:image" content="{{ asset('frontend')}}/images/logo-black.png">
-     <meta name="og:url" content="{{ url()->full() }}">
-    <meta name="og:site_name" content="Bdtype">
-    <meta name="og:locale" content="en">
-    <meta name="og:type" content="website">
-    <meta name="fb:admins" content="1323213265465">
-    <meta name="fb:app_id" content="13212465454">
-    <meta name="og:type" content="product">
+    <meta property="og:title" content="{{$meta_title}}">
+    <meta property="og:description" content="{{$meta_desciption}}">
+    <meta property="og:image" content="{{asset('upload/images/'.Config::get('siteSetting.meta_image'))}}">
+    <meta property="og:url" content="{{ url()->full() }}">
+    <meta property="og:site_name" content="{{Config::get('siteSetting.site_name')}}">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="website">
+    <meta property="og:type" content="article">
 
+    <!-- Schema.org for Google -->
+
+    <meta itemprop="title" content="{{$meta_title}}">
+    <meta itemprop="description" content="{{$meta_desciption}}">
+    <meta itemprop="image" content="{{asset('upload/images/'.Config::get('siteSetting.meta_image'))}}">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="{{$meta_title}}">
+    <meta name="twitter:title" content="{{$meta_title}}">
+    <meta name="twitter:description" content="{{$meta_desciption}}">
+    <meta name="twitter:site" content="{{url('/')}}">
+    <meta name="twitter:creator" content="@Neyamul">
+    <meta name="twitter:image:src" content="{{asset('upload/images/logo/'.Config::get('siteSetting.meta_image'))}}">
+    <meta name="twitter:player" content="#">
+    <!-- Twitter - -->
 @endsection
 
 @section('content')
@@ -132,7 +136,7 @@ function banglaDate($date){
                                                 <div class="col-md-6 col-sm-6" >
                                                     <div class="news-post standard-post2">
                                                         <div class="post-gallery">
-                                                            <img src="{{ asset('upload/images/'. $news->image->source_path)}}" alt="">
+                                                            <img src="{{ asset('upload/images/thumb_img/'. $news->image->source_path)}}" alt="">
                                                             @if($news->type == 3)
                                                                 <a class="play-link" href="{{route('news_details', $news->news_slug)}}"><i class="fa fa-play-circle-o"></i></a>
                                                             @elseif($news->type == 4)

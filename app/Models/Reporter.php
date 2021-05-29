@@ -13,6 +13,8 @@ class Reporter extends Model
         return $this->belongsTo(User::class);
     }
 
-
+    public function news(){
+        return $this->hasMany(News::class, 'user_id');
+    }
 
 }

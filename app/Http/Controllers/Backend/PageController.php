@@ -32,7 +32,7 @@ class PageController extends Controller
             'page_name_bd' => ['required'],
             'page_name_en' => ['required'],
             'template' => ['required'],
-            'menu' => ['required'],
+            
         ]);
 
       //dd($request->all());
@@ -53,13 +53,13 @@ class PageController extends Controller
             'template' =>$request->template,
             'menu' => $request->menu,
             'images' => $new_name,
-            'creator_id' => $user_id,
+            'created_by' => $user_id,
             'status' => ($request->status) ? '1' : '0',
         ];
 
         $insert = Page::create($data);
         if($insert){
-            Toastr::success('Page Created Successfully.');
+            Toastr::success('Page Created Successful.');
 
         }else{
             Toastr::success('Page Cann\'t Created.');
@@ -82,7 +82,6 @@ class PageController extends Controller
             'page_name_bd' => ['required'],
             'page_name_en' => ['required'],
             'template' => ['required'],
-            'menu' => ['required'],
         ]);
 
         $user_id = Auth::user()->id;
@@ -90,7 +89,6 @@ class PageController extends Controller
         $data = Page::find($request->id);
         $data->page_name_bd = $request->page_name_bd;
         $data->page_name_en = $request->page_name_en;
-       
         $data->page_dsc =$request->page_dsc;
         $data->template =$request->template;
         $data->menu = $request->menu;
@@ -112,7 +110,7 @@ class PageController extends Controller
         }
         $update = $data->save();
         if($update){
-            Toastr::success('Page update Successfully.');
+            Toastr::success('Page update Successful.');
 
         }else{
             Toastr::success('Page Can\'t update.');
@@ -140,7 +138,7 @@ class PageController extends Controller
             $delete = $get_pages->delete();
             $output = [
                     'status' => true,
-                    'msg' => 'Page deleted successfully.'
+                    'msg' => 'Page deleted successful.'
                 ];
 
         }else{

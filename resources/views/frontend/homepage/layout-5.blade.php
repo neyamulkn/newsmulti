@@ -5,7 +5,7 @@ $section_items = App\Models\HomepageSectionItem::where('section_id', $section->i
 
 if($section->section_type == 'category'){
     $section_items->with(['newsByCategory' => function ($query) {
-    $query->where('status', '=', 1)->orderBy('id', 'desc'); }, 'newsByCategory.image', 'newsByCategory.getCategory:id,category_bd,category_en', 'newsByCategory.subcategoryList:id,subcategory_bd,subcategory_en']);
+    $query->where('status', '=', 'active')->orderBy('id', 'desc'); }, 'newsByCategory.image', 'newsByCategory.getCategory:id,category_bd,category_en', 'newsByCategory.subcategoryList:id,subcategory_bd,subcategory_en']);
 }   
 
 $section_items = $section_items->orderBy('position', 'asc')->get();
@@ -33,7 +33,7 @@ $section_items = $section_items->orderBy('position', 'asc')->get();
                                 <div class="col-md-12">
                                     <div class="item news-post standard-post" style="margin:0px;border-bottom: 1px dotted #ccc;">
                                         <div class="post-gallery">
-                                            <img src="{{ asset('upload/images/thumb_img_box/'. $section_news->image->source_path)}}" alt="">
+                                            <img src="{{ asset('upload/images/thumb_img/'. $section_news->image->source_path)}}" alt="">
                                         </div>
                                         <div class="post-content">
                                             <h2><a href="{{route('news_details', $section_news->news_slug)}}">{{Str::limit($section_news->news_title, 80)}}</a></h2>

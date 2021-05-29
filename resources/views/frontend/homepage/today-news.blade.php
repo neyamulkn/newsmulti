@@ -1,7 +1,7 @@
 <?php  
 
 $section_items = App\Models\HomepageSectionItem::where('section_id', $section->id)->where('status', 1)->with(['newsByCategory' => function ($query) {
-    $query->where('status', '=', 1)->orderBy('id', 'desc')->limit(5); }, 'newsByCategory.image', 'newsByCategory.getCategory:id,category_bd,category_en', 'newsByCategory.subcategoryList:id,subcategory_bd,subcategory_en'])->orderBy('position', 'asc')->take(1)->get();
+    $query->where('status', '=', 'active')->orderBy('id', 'desc')->limit(5); }, 'newsByCategory.image', 'newsByCategory.getCategory:id,category_bd,category_en', 'newsByCategory.subcategoryList:id,subcategory_bd,subcategory_en'])->orderBy('position', 'asc')->take(1)->get();
 ?>
 
 @if(count($section_items)>0)
@@ -36,7 +36,7 @@ $section_items = App\Models\HomepageSectionItem::where('section_id', $section->i
                         <div class="news-post standard-post2">
                            <a style="color: {{$section->text_color}};font-size: 14px;" href="{{route('news_details', $section_news->news_slug)}}">
                             <div class="post-gallery">
-                                <img src="{{ asset('upload/images/thumb_img_box/'. $section_news->image->source_path)}}" alt="">
+                                <img src="{{ asset('upload/images/thumb_img/'. $section_news->image->source_path)}}" alt="">
                             </div>
                             {{Str::limit($section_news->news_title, 40)}}
                             </a>

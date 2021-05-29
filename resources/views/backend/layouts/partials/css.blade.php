@@ -1,10 +1,11 @@
 <!-- This page CSS -->
     @yield('css-top')
-    @yield('css')
+   
     <!--Toaster Popup message CSS -->
 
     <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="{{ mix('backend/css/app.css') }}">
+     @yield('css')
     <link rel="stylesheet" type="text/css" href="{{ asset('backend/css/custom.css') }}">
     <style type="text/css">
         .loadingData

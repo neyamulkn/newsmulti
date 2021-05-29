@@ -14,7 +14,7 @@ class CreateMediaGalleriesTable extends Migration
     public function up()
     {
         Schema::create('media_galleries', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->string('title')->nullable();
             $table->char('source_path', 125)->nullable();
             $table->char('video_link', 255)->nullable();
@@ -23,7 +23,7 @@ class CreateMediaGalleriesTable extends Migration
             $table->integer('user_id');
             $table->tinyInteger('status');
             $table->timestamps();
-          
+
         });
     }
 

@@ -7,7 +7,7 @@
     <!-- Schema.org for Google -->
     <meta itemprop="name" content="{{$get_news->news_title}}">
     <meta itemprop="description" content="{{Str::limit(strip_tags($get_news->news_dsc), 200)}}">
-    <meta itemprop="image" content="@if($get_news->image) {{asset('upload/images/'.$get_news->image->source_path)}} @endif">
+    <meta itemprop="image" content="@if($get_news->image){{asset('upload/images/watermark/'.$get_news->image->source_path) }}@endif">
 
         <!-- Twitter -->
     <meta name="twitter:card" content="{{Str::limit(strip_tags($get_news->news_dsc), 150)}}">
@@ -15,14 +15,14 @@
     <meta name="twitter:description" content="{{Str::limit($get_news->news_dsc, 200)}}">
     <meta name="twitter:site" content="{{url('/')}}">
     <meta name="twitter:creator" content="@Bdtype">
-    <meta name="twitter:image:src" content="@if($get_news->image) {{asset('upload/images/'.$get_news->image->source_path)}} @endif">
+    <meta name="twitter:image" content="@if($get_news->image){{asset('upload/images/watermark/'.$get_news->image->source_path) }}@endif">
     <meta name="twitter:player" content="#">
     <!-- Twitter - Product (e-commerce) -->
 
     <!-- Open Graph general (Facebook, Pinterest & Google+) -->
     <meta name="og:title" content="{{$get_news->news_title}}">
     <meta name="og:description" content="{{Str::limit(strip_tags($get_news->news_dsc), 100)}}">
-    <meta name="og:image" content="@if($get_news->image) {{asset('upload/images/'.$get_news->image->source_path)}} @endif">
+    <meta property="og:image" content="@if($get_news->image){{asset('upload/images/watermark/'.$get_news->image->source_path) }}@endif" />
      <meta name="og:url" content="{{ url()->full() }}">
     <meta name="og:site_name" content="Bdtype">
     <meta name="og:locale" content="bn_BD">
@@ -188,7 +188,7 @@ function banglaDate($date){
                                     </video>
                                     @endforeach
                                 @else
-                                    <img title="{{$get_news->title}}" src="@if($get_news->image) {{asset('upload/images/'.$get_news->image->source_path)}} @endif">
+                                    <img title="{{$get_news->title}}" src="@if($get_news->image) {{asset('upload/images/news/'.$get_news->image->source_path)}} @endif">
                                     <span class="image-caption">@if($get_news->image) {{$get_news->image->title}} @endif</span>
                                 @endif
 							</div>
@@ -198,9 +198,26 @@ function banglaDate($date){
                                 <span title="Zoom Out" id="linkDecrease" style="cursor: zoom-out;"><i class="fa fa-minus-circle"  aria-hidden="true"></i></span>
                                 <span title="Reset font size" id="linkReset" ><i class="fa fa-undo" aria-hidden="true"></i></span>
                             </div>
-							<div class="post-content" id="divContent">
-                                {!! $get_news->news_dsc !!}
-							</div>
+							<div class="post-content news_dsc" id="divContent">
+                                @php 
+
+                                $ads = $get_ads->toArray();
+                                $adNo = 0; $contentBlock = explode("</p>", $get_news->news_dsc); @endphp
+                                @foreach($contentBlock as $index => $content)
+                                    
+                                    {!! $content  !!}
+
+                                    @if(($index+1) % 2 == 0 && $adNo < count($ads))
+                                        <div class="advertisement">
+                                            <div class="desktop-advert">
+                                                {!! $ads[$adNo]['add_code'] !!}
+                                            </div>
+                                        </div>
+                                        @php $adNo++; @endphp
+                                    @endif
+                                       
+                                @endforeach
+                                </div>
 							<!-- <div class="post-tags-box">
 								<ul class="tags-box">
 									<li><i class="fa fa-tags"></i><span>Tags:</span></li>

@@ -7,9 +7,9 @@ use App\Models\News;
 use App\Models\HomepageSection;
 use App\Models\Page;
 use App\Models\read_later;
+use App\Models\ReadLater;
 use App\Models\SubCategory;
 use App\Models\Deshjure;
-use App\Models\Setting;
 use App\User;
 use App\Models\Category;
 use Brian2694\Toastr\Facades\Toastr;
@@ -28,26 +28,23 @@ class HomeController extends Controller
     {
 
         $data = [];
-
         //get all homepage section
-            $data['sections'] = HomepageSection::where('status', 1)->orderBy('position', 'asc')->paginate(5);
+        $data['sections'] = HomepageSection::where('status', 1)->orderBy('position', 'asc')->paginate(5);
 
-            //check ajax request
-            if ($request->ajax()) {
-                $data['ajaxLoad'] = true;
-                $view = view('frontend.homepage.homesection', $data)->render();
-                return response()->json(['html'=>$view]);
-            }
-            return view('frontend.index2')->with($data);
+        //check ajax request
+        if ($request->ajax()) {
+            $data['ajaxLoad'] = true;
+            $view = view('frontend.homepage.homesection', $data)->render();
+            return response()->json(['html'=>$view]);
+        }
+        return view('frontend.index2')->with($data);
+    }
 
+    public function indexEn(Request $request)
+    {
 
-        if(!Session::get('locale')){
-           return view('frontend.index2')->with($data);
-
-        }else{  $folder = 'frontend.en.'; }
-
-      
-        
+        $data = [];
+        Session::put('locale', 'en');
         $data['recent_section_news'] = DB::table('news')
             ->join('categories', 'news.category', '=', 'categories.id')
             ->leftJoin('sub_categories', 'news.subcategory', '=', 'sub_categories.id')
@@ -55,13 +52,7 @@ class HomeController extends Controller
             ->where('news.breaking_news', 1)
             ->limit(9)
             ->orderBy('news.id', 'DESC')
-            ->where('news.status', '=', 1);
-
-            if(Session::get('locale')){
-                $data['recent_section_news'] = $data['recent_section_news']->where('news.lang', '=', 2);
-            }else{
-                $data['recent_section_news'] = $data['recent_section_news']->where('news.lang', '=', 1);
-            }
+            ->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
             $data['recent_section_news'] = $data['recent_section_news']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
         $data['crime_posts'] = DB::table('news')
@@ -70,13 +61,7 @@ class HomeController extends Controller
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->where('categories.cat_slug_en', 'crime')
             ->limit(5)
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-
-            if(Session::get('locale')){
-                $data['crime_posts'] = $data['crime_posts']->where('news.lang', '=', 2);
-            }else{
-                $data['crime_posts'] = $data['crime_posts']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
             $data['crime_posts'] = $data['crime_posts']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
         $data['sidebar_news_first'] = DB::table('news')
@@ -85,13 +70,7 @@ class HomeController extends Controller
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->limit(9)
             ->inRandomOrder()
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-
-            if(Session::get('locale')){
-                $data['sidebar_news_first'] = $data['sidebar_news_first']->where('news.lang', '=', 2);
-            }else{
-                $data['sidebar_news_first'] = $data['sidebar_news_first']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
             $data['sidebar_news_first'] = $data['sidebar_news_first']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
         $data['special_reports'] = DB::table('news')
@@ -100,12 +79,7 @@ class HomeController extends Controller
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->where('categories.cat_slug_en', 'discussed')
             ->limit(7)
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-            if(Session::get('locale')){
-                $data['special_reports'] = $data['special_reports']->where('news.lang', '=', 2);
-            }else{
-                $data['special_reports'] = $data['special_reports']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
             $data['special_reports'] = $data['special_reports']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
         $data['get_national_news'] =  DB::table('news')
@@ -114,12 +88,7 @@ class HomeController extends Controller
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->limit(6)
             ->where('categories.cat_slug_en', 'national')
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-            if(Session::get('locale')){
-                $data['get_national_news'] = $data['get_national_news']->where('news.lang', '=', 2);
-            }else{
-                $data['get_national_news'] = $data['get_national_news']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
             $data['get_national_news'] = $data['get_national_news']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
         $data['get_sport_news'] = DB::table('news')
@@ -128,12 +97,7 @@ class HomeController extends Controller
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->limit(9)
             ->where('categories.cat_slug_en', 'sports')
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-             if(Session::get('locale')){
-                $data['get_sport_news'] = $data['get_sport_news']->where('news.lang', '=', 2);
-            }else{
-                $data['get_sport_news'] = $data['get_sport_news']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
             $data['get_sport_news'] = $data['get_sport_news']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
         $data['crime_posts'] = DB::table('news')
@@ -142,20 +106,9 @@ class HomeController extends Controller
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->limit(5)
             ->where('categories.cat_slug_en', 'crime')
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-             if(Session::get('locale')){
-                $data['crime_posts'] = $data['crime_posts']->where('news.lang', '=', 2);
-            }else{
-                $data['crime_posts'] = $data['crime_posts']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
             $data['crime_posts'] = $data['crime_posts']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
-       // $data['slider_box_news'] = DB::table('news')
-       //      ->join('categories', 'news.category', '=', 'categories.id')
-       //      ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
-       //      ->limit(5)
-       //      ->inRandomOrder()
-       //      ->select('news.*','categories.category_bd', 'media_galleries.source_path', 'media_galleries.title')->get();
 
         $data['entertainment_news'] = DB::table('news')
             ->join('categories', 'news.category', '=', 'categories.id')
@@ -163,12 +116,7 @@ class HomeController extends Controller
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->limit(5)
             ->where('categories.cat_slug_en', 'entertainment')
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-            if(Session::get('locale')){
-                $data['entertainment_news'] = $data['entertainment_news']->where('news.lang', '=', 2);
-            }else{
-                $data['entertainment_news'] = $data['entertainment_news']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
             $data['entertainment_news'] = $data['entertainment_news']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
         $data['get_technology_news'] = DB::table('news')
@@ -177,12 +125,7 @@ class HomeController extends Controller
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->limit(5)
             ->where('categories.cat_slug_en', 'technology')
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-            if(Session::get('locale')){
-                $data['get_technology_news'] = $data['get_technology_news']->where('news.lang', '=', 2);
-            }else{
-                $data['get_technology_news'] = $data['get_technology_news']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
             $data['get_technology_news'] = $data['get_technology_news']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
         $data['get_accidente_news'] = DB::table('news')
@@ -191,12 +134,7 @@ class HomeController extends Controller
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->limit(5)
             ->where('categories.cat_slug_en', 'accidente')
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-             if(Session::get('locale')){
-                $data['get_accidente_news'] = $data['get_accidente_news']->where('news.lang', '=', 2);
-            }else{
-                $data['get_accidente_news'] = $data['get_accidente_news']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
             $data['get_accidente_news'] = $data['get_accidente_news']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
         $data['get_education_news'] = DB::table('news')
@@ -205,12 +143,7 @@ class HomeController extends Controller
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->limit(5)
             ->where('categories.cat_slug_en', 'education')
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-             if(Session::get('locale')){
-                $data['get_education_news'] = $data['get_education_news']->where('news.lang', '=', 2);
-            }else{
-                $data['get_education_news'] = $data['get_education_news']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
 
         $data['get_education_news'] = $data['get_education_news']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
@@ -220,12 +153,7 @@ class HomeController extends Controller
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->limit(5)
             ->where('categories.cat_slug_en', 'health')
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-             if(Session::get('locale')){
-                $data['get_health_news'] = $data['get_health_news']->where('news.lang', '=', 2);
-            }else{
-                $data['get_health_news'] = $data['get_health_news']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
             $data['get_health_news'] = $data['get_health_news']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
         $data['desh_jure_news'] = DB::table('news')
@@ -234,12 +162,7 @@ class HomeController extends Controller
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->limit(10)
             ->where('categories.cat_slug_en', 'deshjure')
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-             if(Session::get('locale')){
-                $data['desh_jure_news'] = $data['desh_jure_news']->where('news.lang', '=', 2);
-            }else{
-                $data['desh_jure_news'] = $data['desh_jure_news']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
             $data['desh_jure_news'] = $data['desh_jure_news']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
 
@@ -249,35 +172,20 @@ class HomeController extends Controller
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->limit(7)
             ->where('categories.cat_slug_en', 'international')
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-             if(Session::get('locale')){
-                $data['get_world_news'] = $data['get_world_news']->where('news.lang', '=', 2);
-            }else{
-                $data['get_world_news'] = $data['get_world_news']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
             $data['get_world_news'] = $data['get_world_news']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
          $data['get_picture_voice'] =  DB::table('news')
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->limit(9)
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-             if(Session::get('locale')){
-                $data['get_picture_voice'] = $data['get_picture_voice']->where('news.lang', '=', 2);
-            }else{
-                $data['get_picture_voice'] = $data['get_picture_voice']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
             $data['get_picture_voice'] = $data['get_picture_voice']->select('news.*', 'media_galleries.source_path', 'media_galleries.title')->get();
-         
+
         $data['get_visual_gallery'] =  DB::table('news')
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->limit(5)
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1)
-            ->where('news.type', '3');
-             if(Session::get('locale')){
-                $data['get_visual_gallery'] = $data['get_visual_gallery']->where('news.lang', '=', 2);
-            }else{
-                $data['get_visual_gallery'] = $data['get_visual_gallery']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')
+            ->where('news.type', '3')->where('news.lang', '=', 'en');
             $data['get_visual_gallery'] = $data['get_visual_gallery']->select('news.*', 'media_galleries.source_path', 'media_galleries.title')->get();
 
 
@@ -287,12 +195,7 @@ class HomeController extends Controller
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->limit(5)
             ->where('categories.cat_slug_en', 'life-style')
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-             if(Session::get('locale')){
-                $data['get_life_style'] = $data['get_life_style']->where('news.lang', '=', 2);
-            }else{
-                $data['get_life_style'] = $data['get_life_style']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
             $data['get_life_style'] = $data['get_life_style']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
         $data['get_recipe'] =  DB::table('news')
@@ -301,12 +204,7 @@ class HomeController extends Controller
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->limit(5)
             ->where('categories.cat_slug_en', 'recipe')
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-             if(Session::get('locale')){
-                $data['get_recipe'] = $data['get_recipe']->where('news.lang', '=', 2);
-            }else{
-                $data['get_recipe'] = $data['get_recipe']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
             $data['get_recipe'] = $data['get_recipe']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
         $data['get_live_tv'] =  DB::table('news')
@@ -315,12 +213,7 @@ class HomeController extends Controller
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->limit(5)
             ->where('categories.cat_slug_en', 'live-tv')
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-             if(Session::get('locale')){
-                $data['get_live_tv'] = $data['get_live_tv']->where('news.lang', '=', 2);
-            }else{
-                $data['get_live_tv'] = $data['get_live_tv']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
             $data['get_live_tv'] = $data['get_live_tv']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
         $data['get_politics'] =  DB::table('news')
@@ -329,12 +222,7 @@ class HomeController extends Controller
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->limit(5)
             ->where('categories.cat_slug_en', 'politics')
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-             if(Session::get('locale')){
-                $data['get_politics'] = $data['get_politics']->where('news.lang', '=', 2);
-            }else{
-                $data['get_politics'] = $data['get_politics']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
             $data['get_politics'] = $data['get_politics']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
         $data['get_provash_news'] =  DB::table('news')
@@ -342,14 +230,9 @@ class HomeController extends Controller
             ->leftJoin('sub_categories', 'news.subcategory', '=', 'sub_categories.id')
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->where('categories.cat_slug_en', 'expatriate')
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1)
-            ->limit(5);
-             if(Session::get('locale')){
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')
+            ->limit(5)->where('news.lang', '=', 'en');
 
-                $data['get_provash_news'] = $data['get_provash_news']->where('news.lang', '=', 2);
-            }else{
-                $data['get_provash_news'] = $data['get_provash_news']->where('news.lang', '=', 1);
-            }
             $data['get_provash_news'] = $data['get_provash_news']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
          $data['religion_news'] =  DB::table('news')
@@ -358,35 +241,31 @@ class HomeController extends Controller
             ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
             ->where('categories.cat_slug_en', 'religion-and-life')
             ->limit(5)
-            ->orderBy('news.id', 'DESC')->where('news.status', '=', 1);
-             if(Session::get('locale')){
-                $data['religion_news'] = $data['religion_news']->where('news.lang', '=', 2);
-            }else{
-                $data['religion_news'] = $data['religion_news']->where('news.lang', '=', 1);
-            }
+            ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')->where('news.lang', '=', 'en');
+
             $data['religion_news'] = $data['religion_news']->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 
-        return view($folder.'index')->with($data);
+        return view('frontend.en.index')->with($data);
     }
 
-    public function category(Request $request)
+    public function category(Request $request, $category, $subcategory=null,$childCategory=null,$subchildCategory=null )
     {
 
         $data = [];
         if(Session::get('locale')){ $folder = 'frontend.en.'; }else{  $folder = 'frontend.'; }
 
-        $data['category'] = Category::where('cat_slug_en', $request->category)->first();
+        $data['category'] = Category::where('cat_slug_en', $category)->first();
         if($data['category']){
 
-            $data['subcategory'] = Subcategory::where('subcat_slug_en', $request->subcategory)->first();
-            $data['child_cat'] = Deshjure::where('slug_en', $request->district)->where('cat_type', 1)->first();
-            $data['subchild_cat'] = Deshjure::where('slug_en', $request->upzilla)->where('cat_type', 2)->first();
+            $data['subcategory'] = Subcategory::where('subcat_slug_en', $subcategory)->first();
+            $data['child_cat'] = Deshjure::where('slug_en', $childCategory)->where('cat_type', 1)->first();
+            $data['subchild_cat'] = Deshjure::where('slug_en', $subchildCategory)->where('cat_type', 2)->first();
 
             $categories = News::with(['subcategoryList', 'image'])
                 ->where('category', '=', $data['category']->id)
-                ->where('status', '=', 1);
+                ->where('status', '=', 'active');
 
-                if($request->subcategory != null){
+                if($data['subcategory'] != null){
                     $categories = $categories->where('subcategory', '=',  $data['subcategory']->id);
                 }
                 if($data['child_cat'] != null){
@@ -397,13 +276,13 @@ class HomeController extends Controller
                 }
 
                 if(Session::get('locale')){
-                   $categories = $categories->where('news.lang', '=', 2);
+                   $categories = $categories->where('news.lang', '=', 'en');
                 }else{
-                   $categories = $categories->where('news.lang', '=', 1);
+                   $categories = $categories->where('news.lang', '=', 'bd');
                 }
 
             $data['categories'] =  $categories->orderBy('id', 'DESC')->paginate(21);
-             if($request->category == 'deshjure' && $request->subcategory == null ){
+             if($category == 'deshjure' && $subcategory == null ){
                  return view($folder.'deshjure')->with($data);
              }
 
@@ -416,20 +295,18 @@ class HomeController extends Controller
 
     public  function news_details($slug){
         $data = [];
-        $get_news = News::with(['image','reporter', 'attachFiles'])->where('news_slug', $slug);
-        if(!Auth::check() || Auth::user()->role_id == 3){
-        $get_news->where('status', 1);
-        }
-        $data['get_news'] = $get_news->first();
-      
-        if($data['get_news']){
-            
+        $get_news = News::with(['image','reporter', 'attachFiles'])->where('news_slug', $slug)->where('status', 'active');
 
-            $lang = 1;
-            if($data['get_news']->lang == 2){
-                $lang = 2;
+        $data['get_news'] = $get_news->first();
+
+        if($data['get_news']){
+
+
+            $lang = 'bd';
+            if($data['get_news']->lang == 'en'){
+                $lang = 'en';
                 Session::put('locale', 'en');
-                $folder = 'frontend.en.'; 
+                $folder = 'frontend.en.';
             }else{
                 Session::forget('locale');
                 $folder = 'frontend.';
@@ -464,7 +341,7 @@ class HomeController extends Controller
         $data['find_page'] = Page::where('page_slug', $url)->first();
         $data['get_page'] = view($folder.'layouts.page')->with($data);
 
-       
+
         if($data['find_page']){
             return view($folder.'page')->with($data);
         }else{
@@ -472,14 +349,14 @@ class HomeController extends Controller
         }
 
     }
-    public function reporter_details($username){
+
+    public function reporterPublicProfile($username){
         $data = [];
 
         $data['reporter'] = User::with('userinfo')->where('username', $username)->first();
-
         if(Session::get('locale')){ $folder = 'frontend.en.'; }else{  $folder = 'frontend.'; }
         if($data['reporter']){
-            $data['get_news'] = News::with(['categoryList', 'subcategoryList', 'image'])->where('user_id', $data['reporter']->id)->where('status', '=', 1)
+            $data['get_news'] = News::with(['categoryList', 'subcategoryList', 'image'])->where('user_id', $data['reporter']->id)->where('status', '=', 'active')
                 ->orderBy('id', 'DESC')->paginate(24);
             return view($folder.'reporter-details')->with($data);
         }else{
@@ -487,30 +364,29 @@ class HomeController extends Controller
         }
 
     }
-    public function user_profile($username){
+
+    public function userPublicProfile($username){
         $data = [];
-        if(Session::get('locale')){ $folder = 'frontend.en.'; }else{  $folder = 'frontend.'; }
+        if(Session::get('locale')){ $folder = 'frontend.en.'; }else{  $folder = 'frontend.users.'; }
         $data['user_details'] = User::where('username', $username)->first();
         if($data['user_details']){
-            $data['total_Bdnews'] = News::where('user_id',  $data['user_details']->id)->where('lang', 1)->count();
-            $data['total_Engnews'] = News::where('user_id',  $data['user_details']->id)->where('lang', 2)->count();
-            $data['read_laters'] = read_later::where('user_id',  $data['user_details']->id)->count();
+            $data['total_Bdnews'] = News::where('user_id',  $data['user_details']->id)->where('lang', 'bd')->count();
+            $data['total_Engnews'] = News::where('user_id',  $data['user_details']->id)->where('lang', 'en')->count();
+            $data['read_laters'] = ReadLater::where('user_id',  $data['user_details']->id)->count();
             return view($folder.'user-profile')->with($data);
         }else{
             return view($folder.'404');
         }
-
-    
     }
 
     public function search_news(Request $request){
         $output = '';
         $search_news = News::leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')->where('news_title', 'LIKE', '%'. $request->src_key .'%')
         ->orWhere('keywords', 'like', '%' . $request->src_key . '%')
-        ->where('news.status', 1)
+        ->where('news.status', '=', 'active')
         ->take(7)->orderBy('news.id', 'desc')->select('news.news_title','news.news_slug','news.publish_date','news.news_slug', 'media_galleries.source_path')->get();
 
-      
+
         if(count($search_news)>0){
 
             $output = '<ul class="list-posts">';
@@ -537,7 +413,7 @@ class HomeController extends Controller
 
         $search_results = News::leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')->where('news_title', 'LIKE', '%'. $request->q .'%')
         ->orWhere('keywords', 'like', '%' . $request->q . '%')
-        ->where('news.status', 1)
+        ->where('news.status', '=', 'active')
         ->take(7)->orderBy('news.id', 'desc')->select('news.news_title','news.news_slug','news.publish_date','news.news_slug', 'media_galleries.source_path')->paginate(20);
         // dd($search_results );
         if(Session::get('locale')){ $folder = 'frontend.en.'; }else{  $folder = 'frontend.'; }
@@ -577,12 +453,12 @@ class HomeController extends Controller
                 ->where('news.id', '!=', $data['get_news']->id)
                 ->where('news.category', $data['get_news']->category);
                 if(Session::get('locale')){
-                   $data['more_news'] = $data['more_news']->where('news.lang', '=', 2);
+                   $data['more_news'] = $data['more_news']->where('news.lang', '=', 'en');
                 }else{
-                   $data['more_news'] = $data['more_news']->where('news.lang', '=', 1);
+                   $data['more_news'] = $data['more_news']->where('news.lang', '=', 'bd');
                 }
 
-                $data['more_news'] = $data['more_news']->orderBy('id', 'DESC')->where('status', '=', 1)
+                $data['more_news'] = $data['more_news']->orderBy('id', 'DESC')->where('status', '=','active')
                 ->take(8)->get();
             return view($folder.'news-details')->with($data);
         }else{
@@ -610,7 +486,7 @@ class HomeController extends Controller
                 ->where('news.id', '!=', $data['get_news']->id)
                 ->where('news.category', $data['get_news']->category)
                 ->select('news.*', 'sub_categories.subcategory_bd', 'media_galleries.source_path')
-                ->orderBy('news.id', 'DESC')->where('news.status', '=', 1)
+                ->orderBy('news.id', 'DESC')->where('news.status', '=', 'active')
                 ->take(15)->get();
 
            return view($folder.'news-details')->with($data);
@@ -625,10 +501,9 @@ class HomeController extends Controller
     }
 
     public function feed(){
-        $setting = Setting::first();
-      
-        $get_feeds = News::with(['image:id,source_path','reporter:id,name'])->take(1000)->where('status', 1)->orderBy('id', 'DESC')->get();
-        
+
+        $get_feeds = News::with(['image:id,source_path','reporter:id,name'])->take(1000)->where('status', 'active')->orderBy('id', 'DESC')->get();
+
         return Response::view('frontend.feed',  ['get_feeds' => $get_feeds])->header('Content-Type', 'text/xml');
     }
 

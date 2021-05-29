@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Cart;
+use App\User;
 use App\Providers\RouteServiceProvider;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -60,29 +60,37 @@ class LoginController extends Controller
         Cookie::queue('password', $password, time() + (86400));
         $user_id = (Cookie::has('user_id') ? Cookie::get('user_id') :  Session::get('user_id'));
 
-        $fieldType = filter_var($request->emailOrMobile, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+        $fieldType = filter_var($request->emailOrMobile, FILTER_VALIDATE_EMAIL) ? 'email' : 'mobile';
 
-        if(auth()->attempt(array($fieldType => $emailOrMobile, 'password' => $password)))
+        $user = User::with(['reporter' => function($query){
+           $query->where('status', '=', 'active');}])->where($fieldType, $emailOrMobile)->first();
+        //check user roll & login this panel
+        $guard = 'web';
+        if($user){
+            if($user->role_id == 'reporter' && $user->reporter){ $guard = 'reporter'; }
+            else{ $guard = 'web'; }
+        }
+
+        if(Auth::guard($guard)->attempt(array($fieldType => $emailOrMobile, 'password' => $password)))
         {
-            if(Auth::user()->status != '1') {
-                Toastr::error(Auth::user()->name. ' your account is deactive.');
-                Auth::logout();
-                return back()->withInput();
+            if(Auth::guard($guard)->user()->status != 'active') {
+                Toastr::error(Auth::guard($guard)->user()->name. ' your account is deactive.');
+                Auth::guard($guard)->logout();
+                return back()->with('error', 'Your account is deactive. Please contact with administrator.');
             }
-            
+
             Toastr::success('Logged in success.');
-            $user = Auth::user();
-            if($user->role_id == env('USERS')){
-                return redirect()->intended(route('user_profile', [$user->username]));
+            $user = Auth::guard($guard)->user();
+            if($user->role_id == 'reporter'){
+                return redirect()->intended(route('reporter.dashboard'));
             }else{
-                return redirect()->intended(route('dashboard'));
+                return redirect()->intended(route('user.dashboard'));
             }
-            
+
            return redirect()->intended(route('home'));
-           
+
         }else{
-            Toastr::error( $fieldType. ' or password is invalid.');
-            return back()->withInput();
+            return back()->withInput()->with('error', $fieldType. ' or password is invalid.');;
         }
     }
 

@@ -19,7 +19,7 @@ trait CreateSlug {
 
         if (count($check_slug)>0){
             //find slug until find not used.
-            for ($i = 1; $i <= count($check_slug); $i++) {
+            for ($i = 1; $i <= count($check_slug)+1; $i++) {
                 $newSlug = $slug.'-'.$i;
                 if (!$check_slug->contains($field, $newSlug)) {
                     return $newSlug;
@@ -37,7 +37,7 @@ trait CreateSlug {
 
         if (count($check_path)>0){
             //find slug until find not used.
-            for ($i = 1; $i <= count($check_path); $i++) {
+            for ($i = 1; $i <= count($check_path)+1; $i++) {
                 $newPath = $i.'-'.$imagePath;
                 if (!$check_path->contains($field, $newPath)) {
                     return $newPath;

@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\City;
+use App\Models\News;
 use App\Models\Notification;
 use App\Models\Reporter;
 
-
+use App\Models\Transaction;
 use App\User;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
@@ -18,30 +20,66 @@ use Intervention\Image\Facades\Image;
 class ReporterController extends Controller
 {
 
-    public function index()
+    public function index(Request $request, $status= '')
     {
-        $get_reporter = User::with('userinfo')->where('role_id', 2)->orWhere('role_id', 4)->orWhere('role_id', 5)->get();
-        return view('backend.reporter-list')->with(compact('get_reporter'));
+        $reporters = User::with('allnews')
+            ->join('reporters', 'users.id', 'reporters.user_id');
+        if($status){
+            $reporters->where('users.status', $status);
+        }
+        if(!$status && $request->status && $request->status != 'all'){
+            $reporters->where('users.status', $request->status);
+        }
+        if($request->reporter && $request->reporter != 'all'){
+        $keyword = $request->reporter;
+        $reporters->where(function ($query) use ($keyword) {
+                $query->orWhere('name', 'like', '%' . $keyword . '%');
+                $query->orWhere('mobile', 'like', '%' . $keyword . '%');
+                $query->orWhere('email', 'like', '%' . $keyword . '%');
+            });
+        }if($request->location && $request->location != 'all'){
+            $reporters->where('working_zilla', $request->location);
+        }
+
+        $data['reporters'] = $reporters->where('reporters.status', 'active')
+            ->selectRaw('users.*, reporters.designation')->paginate(15);
+        $data['locations'] = City::orderBy('name', 'asc')->get();
+
+        return view('backend.reporter.reporter-list')->with($data);
     }
 
+    public function reporterProfile($username){
+        $data['reporter']  = User::where('username', $username)->first();
+        $data['get_news'] = News::orderBy('news.id', 'desc')
+            ->join('users', 'news.user_id', '=', 'users.id')
+            ->leftJoin('categories', 'news.category', '=', 'categories.id')
+            ->leftJoin('sub_categories', 'news.subcategory', '=', 'sub_categories.id')
+            ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
+            ->groupBy('news.id')->selectRaw('news.*, users.name, users.username,categories.category_bd,categories.category_en, sub_categories.subcategory_bd,media_galleries.source_path')->paginate(15);
+        $data['transactions'] = Transaction::with(['user:id,name,username,mobile', 'addedBy'])
+            ->where('user_id', $data['reporter']->id)
+            ->whereIn('type', ['wallet', 'withdraw'])
+            ->orderBy('id', 'desc')->paginate(15);
+        return view('backend.reporter.profile')->with($data);
+    }
     public function create()
     {
-        return view('backend.reporter');
+        return view('backend.reporter.reporter');
     }
-
 
     public function store(Request $request)
     {
         $request->validate([
             'username' => ['required', 'unique:users'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'mobile' => ['required',  'unique:users'],
             'password' => ['required', 'string', 'min:8'],
         ]);
 
 
-        $user_id = Auth::user()->id;
+        $user_id = Auth::guard('admin')->user()->id;
 
-        $image_name = 'author-image.png';
+        $image_name = null;
         if($request->hasFile('image')){
             $image = $request->file('image');
             $image_name =  time().$image->getClientOriginalName();
@@ -56,15 +94,15 @@ class ReporterController extends Controller
         $insert = User::create([
             'name' => $request->reporter_name,
             'username' =>$request->username,
-            'phone' =>$request->phone,
+            'mobile' =>$request->mobile,
             'email' => $request->email,
             'role_id' => $request->role_id,
             'gender' => $request->gender,
             'birthday' => $request->birthday,
-            'image' => $image_name,
-            'creator_id' => $user_id,
+            'photo' => $image_name,
+            'created_by' => $user_id,
             'password' => Hash::make($request->password),
-            'status' => ($request->status) ? '1' : '0',
+            'status' => ($request->status) ? 'active' : 'pending',
         ]);
 
         if($insert){
@@ -77,6 +115,7 @@ class ReporterController extends Controller
                 'permanent_address' => $request->permanent_address,
                 'appointed_date' => $request->appointed_date,
                 'national_id' => $request->national_id,
+                'status' => 'active',
             ];
             Reporter::create($data);
             Toastr::success('Reporter Created Successfully.');
@@ -88,17 +127,12 @@ class ReporterController extends Controller
 
     public function edit($id)
     {
-        $user_id = Auth::user()->id;
+
         $data = [];
+        $reporter = User::with('reporter')->where('id', $id)->first();
 
-        $reporter = Reporter::where('user_id', $id);
-        if(Auth::user()->role_id != 1){
-            $reporter =  $reporter->where('id', $user_id);
-        }
-        $data['reporter'] =  $reporter->first();
-
-        if($data['reporter']){
-            return view('backend.reporter-edit')->with($data);
+        if($reporter){
+            return view('backend.reporter.reporter-edit')->with(compact('reporter'));
         }else{
             Toastr::error('Sorry invalid user try again!.');
             return back();
@@ -107,19 +141,22 @@ class ReporterController extends Controller
 
     public function update(Request $request, $reporter_id)
     {
-//        dd($request->all());
+        $request->validate([
+            'username' => ['required', 'unique:users,mobile,'.$reporter_id],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$reporter_id],
+        ]);
 
-        $user_id = Auth::user()->id;
+        $user_id = Auth::guard('admin')->user()->id;
         $user_data = [
             'name' => $request->reporter_name,
             'username' => $request->username,
-            'phone' => $request->phone,
+            'mobile' => $request->mobile,
             'email' => $request->email,
             'role_id' => $request->role_id,
             'gender' => $request->gender,
             'birthday' => $request->birthday,
-            'creator_id' => $user_id,
-            'status' => ($request->status) ? '1' : '0',
+            'created_by' => $user_id,
+            'status' => ($request->status) ? 'active' : 'pending',
         ];
         $image_name = 'author-image.png';
         if($request->hasFile('image')){
@@ -131,7 +168,7 @@ class ReporterController extends Controller
             $image_resize->save($image_path);
             $image_path = public_path('upload/images/users/'.$image_name );
             Image::make($image)->save($image_path);
-            $user_data = array_merge($user_data, ['image' => $image_name]);
+            $user_data = array_merge($user_data, ['photo' => $image_name]);
         }
         if($request->password){
             $user_data = array_merge($user_data, ['password' => Hash::make($request->password)]);
@@ -157,27 +194,12 @@ class ReporterController extends Controller
         return back();
     }
 
-
-    public function reporterStatus($status)
-    {
-        $status = User::find($status);
-        if($status->status == 1){
-            $status->update(['status' => 0]);
-            $output = array( 'status' => 'unpublish',  'message'  => 'Reporter DeActive');
-        }else{
-            $status->update(['status' => 1]);
-            $output = array( 'status' => 'publish',  'message'  => 'Reporter Active Successfully');
-        }
-
-        return response()->json($output);
-    }
-
     public  function delete($id){
         $check = User::find($id);
 
         if($check){
             // reporter from make user
-            $delete = $check->update(['role_id' => env('USERS')]);
+            $delete = $check->update(['role_id' => 'user']);
             Reporter::where('user_id', $id)->update(['status' => 2]);
 
             $fromUser = User::where('role_id', env('ADMIN'))->first();
@@ -188,7 +210,7 @@ class ReporterController extends Controller
                 'notify' => 'Reporter request rejected.',
             ];
             Notification::create($notify);
-        
+
 
             $output = [
                 'status' => true,
@@ -206,12 +228,12 @@ class ReporterController extends Controller
 
     public function manage_request(){
         $get_reporter = Reporter::with('user')->where('status', 0)->get();
-        return view('backend.reporter-request-list')->with(compact('get_reporter'));
+        return view('backend.reporter.reporter-request-list')->with(compact('get_reporter'));
     }
 
     public function rejectedList(){
         $get_reporter = Reporter::with('user')->where('status', 2)->get();
-        return view('backend.reporter-rejected-list')->with(compact('get_reporter'));
+        return view('backend.reporter.reporter-rejected-list')->with(compact('get_reporter'));
     }
 
     public function statusAcceptReject($user_id)
@@ -237,4 +259,13 @@ class ReporterController extends Controller
 
         return response()->json($output);
     }
+
+    public function reporterSecretLogin($id)
+    {
+        $reporter = User::findOrFail(decrypt($id));
+        auth()->guard('reporter')->login($reporter, true);
+        Toastr::success('Reporter panel login success');
+        return redirect()->route('reporter.dashboard');
+    }
+
 }

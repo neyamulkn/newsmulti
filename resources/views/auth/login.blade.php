@@ -1,178 +1,162 @@
+@extends('frontend.layouts.master')
+@section('title', 'Login | '.Config::get('siteSetting.site_name'))
+@section('css')
 
-<!DOCTYPE html>
-<html lang="en">
+<style type="text/css">
+    @media (min-width: 1200px){
+        .container {
+            max-width: 1200px !important;
+        }
+    }
+    .dropdown-toggle::after, .dropup .dropdown-toggle::after {
+        content: initial !important;
+    }
+    .card-footer, .card-header {
+        margin-bottom: 5px;
+        border-bottom: 1px solid #ececec;
+    }#recoverform {
+      display: none; }
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!-- Tell the browser to be responsive to screen width -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="{{asset('backend/assets')}}/images/favicon.png">
-    <title>Login pannel</title>
-        <!-- Custom CSS -->
-    <link rel="stylesheet" type="text/css" href="{{ mix('backend/css/app.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('backend/css/custom.css') }}">
-    <!-- page css -->
-    <link href="{{asset('backend/css/pages/login-register-lock.css')}}" rel="stylesheet">
+    .loginArea{background: #fff; border-radius: 5px;margin:10px 0;padding: 20px;}
+</style>
+ @endsection
+@section('content')
+<div class="container">
+    <div id="pageLoading" style="display: none;"></div>
+    <div class="row justify-content-center">
+        <div class="col-md-3 col-xs-12"></div>
+        <div class="col-md-6 col-xs-12 ">
+            <div class="card loginArea">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-</head>
+                <div class="card-body">
+                    <div id="loginform">
+                       
+                        <form action="{{route('login')}}" data-parsley-validate method="post">
+                            @csrf
+                            
+                            <div class="card-header text-center"><h3>Sign In </h3></div>
 
-<body class="skin-default card-no-border">
-<!-- ============================================================== -->
-<!-- Preloader - style you can find in spinners.css -->
-<!-- ============================================================== -->
-<div class="preloader">
-    <div class="loader">
-        <div class="loader__figure"></div>
-        <p class="loader__label">Please wait</p>
-    </div>
-</div>
-<!-- ============================================================== -->
-<!-- Main wrapper - style you can find in pages.scss -->
-<!-- ============================================================== -->
-<section id="wrapper">
-    <div class="login-register" style="background-image:url({{asset('assets')}}/images/background/login-register.jpg);">
-        <div class="login-box card">
-            <div class="card-body">
-                <a href="{{route('home')}}">
-                <img src="{{ asset('frontend')}}/images/logo-black.png" width="65%" alt="homepage" class="dark-logo" /></a><hr/>
-                <form class="form-horizontal form-material" method="post" id="loginform" action="{{ route('login') }}">
-                    @csrf
-                   
-                    <div class="form-group ">
-                        <div class="col-xs-12">
-                            <input id="emailOrMobile" placeholder="Enter Email or Mobile" type="text" class="form-control @error('emailOrMobile') is-invalid @enderror" name="emailOrMobile" value="{{ old('emailOrMobile') }}" required autocomplete="emailOrMobile" autofocus>
-
-                            @error('emailOrMobile')
-                            <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-xs-12">
-
-                            <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" placeholder="Enter Password" name="password" required autocomplete="current-password">
-
-                            @error('password')
-                            <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                            @enderror
-
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-md-12">
-                            <div class="d-flex no-block align-items-center">
-                                <div class="custom-control custom-checkbox">
-                                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-
-                                    <label class="form-check-label" for="remember">
-                                        {{ __('Remember Me') }}
-                                    </label>
+                            @if(Session::has('status'))
+                                <div class="alert alert-success">
+                                  <strong>Success! </strong> {{Session::get('status')}}
                                 </div>
-                                <div class="ml-auto">
-                                    <a href="javascript:void(0)" id="to-recover" class="text-muted"><i class="fas fa-lock m-r-5"></i> Forgot pwd?</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group text-center">
-                        <div class="col-xs-12 p-b-20">
-                            <button class="btn btn-block btn-lg btn-info btn-rounded" type="submit">Log In</button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-12 col-md-12 m-t-10 text-center">
-                            <div class="social">
-                                @if(config('siteSetting.facebook_login') == 1)
-                                <a class="btn  btn-facebook" href="{{route('social.login', 'facebook')}}" data-toggle="tooltip" title="Login with Facebook"> <i aria-hidden="true" class="fab fa-facebook-f"></i> </a>
                                 @endif
-                                 @if(config('siteSetting.google_login') == 1)
-                                <a href="{{route('social.login', 'google')}}" class="btn btn-googleplus" data-toggle="tooltip" title="Login with Google"> <i aria-hidden="true" class="fab fa-google-plus-g"></i> </a>
-                                @endif 
-                                @if(config('siteSetting.twitter_login') == 1)
-                                <a href="{{route('social.login', 'twitter')}}" class="btn btn-googleplus" data-toggle="tooltip" title="Login with Google"> <i aria-hidden="true" class="fab fa-twitter"></i> </a>
+                                @if(Session::has('error'))
+                                <div class="alert alert-danger">
+                                  {{Session::get('error')}}
+                                </div>
+                            @endif
+                            <div class="form-group">
+                              <label class="control-label" for="phoneOrEmail">Email or Mobile Number</label>
+                              <input type="text" name="emailOrMobile" value="user@gmail.com" placeholder="Enter Email or Mobile Number " id="input-email" required="" data-parsley-required-message = "Email or Mobile number is required" class="form-control @error('emailOrMobile') is-invalid @enderror">
+                              @if ($errors->has('emailOrMobile'))
+                                    <span class="error" role="alert">
+                                        {{ $errors->first('emailOrMobile') }}
+                                    </span>
                                 @endif
                             </div>
+                            <div class="form-group">
+                                <label class="control-label" for="input-password">Password</label>
+                                <input type="password" value="12345678" required="" name="password" value="" placeholder="Password" id="input-password" data-parsley-required-message = "Password is required"  class="form-control">
+                                @if ($errors->has('password'))
+                                    <span class="error" role="alert">
+                                       {{ $errors->first('password') }}
+                                    </span>
+                                @endif
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <div style=" display: flex!important;" class="d-flex no-block align-items-center">
+                                        <div style="display: inline-flex;" class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="Remember"> 
+                                            <label style="margin: 0 5px;" class="custom-control-label" for="Remember"> Remember me</label>
+                                        </div> 
+                                        <div class="ml-auto" style="margin-left: auto!important;">
+                                            <a href="javascript:void(0)" id="to-recover" class="text-muted"><i class="fa fa-lock"></i> Forgot pwd?</a> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <div class="form-group text-center">
+                                <input type="submit" value="Log In" class="btn btn-block btn-lg btn-info btn-rounded">
+                            </div> 
+                            <div class="form-group m-b-0">
+                                <div class="col-sm-12 text-center">
+                                    Don't have an account? <a href="{{route('register')}}" class="text-info m-l-5"><b>Sign Up</b></a>
+                                </div>
+                            </div> 
+                        </form>
+
+                        <div id="column-login" style="margin:15px 0" class="col-sm-8 pull-right">
+                            <div class="row">
+                                <div class="social_login pull-right">
+                                  <a href="{{route('social.login', 'facebook')}}"class="btn btn-social-icon btn-sm btn-facebook " id="socialloginBtn"><i class="fa fa-facebook fa-fw" aria-hidden="true"></i></a>
+                                
+                                  <a style="background:red;" href="{{route('social.login', 'google')}}" class="btn btn-social-icon btn-sm btn-google-plus socialloginBtn" id="socialloginBtn"><i class="fa fa-google fa-fw" aria-hidden="true"></i></a>
+                                </div>
+                            </div>
+
+                        </div> 
+                        
+                    </div>  
+                    <form class="form-horizontal" method="post" id="recoverform" action="{{ route('password.recover') }}">
+                        @csrf
+                        <div class="form-group ">
+                            <div class="col-xs-12">
+                                <h3>Recover Password</h3>
+                                <p class="text-muted">Enter your Mobile or Email and instructions will be sent to you!</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group m-b-0">
-                        <div class="col-sm-12 text-center">
-                            Don't have an account? <a href="{{ route('register') }}" class="text-info m-l-5"><b>Sign Up</b></a>
+                        <div class="form-group ">
+                            <div class="col-xs-12">
+                                <input class="form-control" id="reseField" name="emailOrMobile" type="text" required placeholder="Mobile or Email"> 
+                                @if ($errors->has('emailOrMobile'))
+                                <span class="error" role="alert">
+                                   {{ $errors->first('emailOrMobile') }}
+                                </span>
+                            @endif
+                            </div>
                         </div>
-                    </div>
-                </form>
-                <form class="form-horizontal" id="recoverform" action="index.html">
-                    <div class="form-group ">
-                        <div class="col-xs-12">
-                            <h3>Recover Password</h3>
-                            <p class="text-muted">Enter your Email and instructions will be sent to you! </p>
+                        <div class="form-group text-center m-t-20">
+                            <div class="col-xs-12">
+                                <button class="btn btn-primary btn-lg btn-block text-uppercase waves-effect waves-light" id="resetBtn" type="submit">Reset Password</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group ">
-                        <div class="col-xs-12">
-                            <input class="form-control" type="text" required="" placeholder="Email"> </div>
-                    </div>
-                    <div class="form-group text-center m-t-20">
-                        <div class="col-xs-12">
-                            <button class="btn btn-primary btn-lg btn-block text-uppercase waves-effect waves-light" type="submit">Reset</button>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
+            <div class="col-md-3 col-xs-12"></div>     
         </div>
     </div>
-</section>
+</div>
+@endsection
 
-<!-- ============================================================== -->
-<!-- End Wrapper -->
-<!-- ============================================================== -->
-<!-- ============================================================== -->
-<!-- All Jquery -->
-<!-- ============================================================== -->
-<script src="{{asset('backend/assets')}}/node_modules/jquery/jquery-3.2.1.min.js"></script>
-<!-- Bootstrap tether Core JavaScript -->
-<script src="{{asset('backend/assets')}}/node_modules/popper/popper.min.js"></script>
-<script src="{{asset('backend/assets')}}/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-<!--Custom JavaScript -->
-<script type="text/javascript">
-    $(function() {
-        $(".preloader").fadeOut();
-    });
-    $(function() {
-        $('[data-toggle="tooltip"]').tooltip()
-    });
-    // ==============================================================
-    // Login and Recover Password
-    // ==============================================================
-    $('#to-recover').on("click", function() {
-        $("#loginform").slideUp();
-        $("#recoverform").fadeIn();
-    });
-</script>
-    <!-- Popup message jquery -->
-    <script src="http://cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
+@section('js')
+    <!--Custom JavaScript -->
+    <script type="text/javascript">
+       
+        $(function() {
+            $('[data-toggle="tooltip"]').tooltip()
+        });
+        // ============================================================== 
+        // Login and Recover Password 
+        // ============================================================== 
+        $('#to-recover').on("click", function() {
+            $("#loginform").slideUp();
+            $("#recoverform").fadeIn();
+        });  
 
-    {!! Toastr::message() !!}
-    <script>
-        @if($errors->any())
-        @foreach($errors->all() as $error)
-        toastr.error("{{ $error }}");
-        @endforeach
-        @endif
+        $('#socialloginBtn').on("click", function() {
+           
+            document.getElementById('pageLoading').style.display = 'block';
+        });
+
+        $('#resetBtn').click('on', function(){
+            var reseField = $('#reseField').val();
+            if(reseField){
+                $('#resetBtn').html('Sending...');
+            }
+        });
     </script>
-</body>
-
-</html>
+@endsection

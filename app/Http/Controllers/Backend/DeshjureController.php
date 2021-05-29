@@ -18,7 +18,7 @@ class DeshjureController extends Controller
         $data = [];
         $data['get_category'] = Category::orderBy('serial', 'ASC')->get();
         $data['get_data'] = Deshjure::where('cat_type', 1)->orderBy('serial', 'ASC')->get();
-        return view('backend.division')->with($data);
+        return view('backend.location.division')->with($data);
     }
 
     public function division_store(Request $request)
@@ -51,7 +51,7 @@ class DeshjureController extends Controller
     public function division_edit($id)
     {   $get_category = Category::all();
         $data = Deshjure::find($id);
-        echo view('backend.edit-form.division')->with(compact('data', 'get_category'));
+        echo view('backend.location.edit-form.division')->with(compact('data', 'get_category'));
     }
 
     public function division_update(Request $request)
@@ -97,7 +97,7 @@ class DeshjureController extends Controller
         $data = [];
         $data['get_category'] = SubCategory::where('category_id', 14)->orderBy('id', 'ASC')->get();
         $data['get_data'] = Deshjure::where('cat_type', 1)->orderBy('serial', 'ASC')->get();
-        return view('backend.district')->with($data);
+        return view('backend.location.district')->with($data);
     }
 
     public function district_store(Request $request)
@@ -131,7 +131,7 @@ class DeshjureController extends Controller
     public function district_edit($id)
     {   $get_category = SubCategory::where('category_id', 14)->orderBy('id', 'ASC')->get();
         $data = Deshjure::find($id);
-        echo view('backend.edit-form.district')->with(compact('data', 'get_category'));
+        echo view('backend.location.edit-form.district')->with(compact('data', 'get_category'));
     }
 
     public function district_update(Request $request)
@@ -176,7 +176,7 @@ class DeshjureController extends Controller
         $data = [];
         $data['get_category'] = Deshjure::where('cat_type', 1)->orderBy('serial', 'ASC')->get();
         $data['get_data'] = Deshjure::where('cat_type', 2)->orderBy('serial', 'ASC')->get();
-        return view('backend.upzilla')->with($data);
+        return view('backend.location.upzilla')->with($data);
     }
 
     public function upzilla_store(Request $request)
@@ -209,7 +209,7 @@ class DeshjureController extends Controller
     public function upzilla_edit($id)
     {   $get_category = Deshjure::where('cat_type', 1)->get();
         $data = Deshjure::find($id);
-        echo view('backend.edit-form.upzilla')->with(compact('data', 'get_category'));
+        echo view('backend.location.edit-form.upzilla')->with(compact('data', 'get_category'));
     }
 
     public function upzilla_update(Request $request)

@@ -1,16 +1,16 @@
 @extends('backend.layouts.master')
-@section('title', 'Social media list')
+@section('title', 'Social media links')
 
 @section('css-top')
 
-    <link href="{{asset('assets')}}/node_modules/select2/dist/css/select2.min.css" rel="stylesheet" type="text/css" />
+    <link href="{{asset('backend/assets')}}/node_modules/select2/dist/css/select2.min.css" rel="stylesheet" type="text/css" />
   
 @endsection
 @section('css')
     <link rel="stylesheet" type="text/css"
-        href="{{asset('assets')}}/node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css">
+        href="{{asset('backend/assets')}}/node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css">
     <link rel="stylesheet" type="text/css"
-        href="{{asset('assets')}}/node_modules/datatables.net-bs4/css/responsive.dataTables.min.css">
+        href="{{asset('backend/assets')}}/node_modules/datatables.net-bs4/css/responsive.dataTables.min.css">
 
 @endsection
 @section('content')
@@ -34,7 +34,8 @@
                                 <li class="breadcrumb-item"><a href="javascript:void(0)">Social</a></li>
                                 <li class="breadcrumb-item active">list</li>
                             </ol>
-                            <button data-toggle="modal" data-target="#add" class="btn btn-info d-none d-lg-block m-l-15"><i class="fa fa-plus-circle"></i> Add New</button>
+                            <button data-toggle="modal" data-target="#add" class="btn btn-info d-none d-lg-block m-l-15"><i
+                                    class="fa fa-plus-circle"></i> Add New</button>
                         </div>
                     </div>
                 </div>
@@ -46,6 +47,7 @@
                 <!-- ============================================================== -->
                 <div class="row">
                     <div class="col-12">
+
                         <div class="card">
                             <div class="card-body">
                                 <div class="table-responsive">
@@ -59,9 +61,10 @@
                                                 <th>Action</th>
                                             </tr>
                                         </thead> 
-                                        <tbody id="positionSorting">
+                                        <tbody id="positionSorting" data-table="socials">
+                                            @if(count($socials)>0)
                                             @foreach($socials as $data)
-                                            <tr  id="item{{$data->id}}" >
+                                            <tr id="item{{$data->id}}" >
                                                
                                                 <td><a href="{{ url($data->link) }}"> {{$data->social_name}} </a></td>
                                                 <td><i style="background: {{$data->background}}; padding:5px; color:{{$data->text_color}}" class="fab {{$data->icon}}"></i></td>
@@ -78,16 +81,21 @@
                                                 </td>
                                             </tr>
                                             @endforeach
+                                            @else
+                                            <tr><td colspan="7">Social media not found.</td></tr>
+                                            @endif
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
                 <!-- ============================================================== -->
                 <!-- End PAge Content -->
                 <!-- ============================================================== -->
+
             </div>
             <!-- ============================================================== -->
             <!-- End Container fluid  -->
@@ -98,8 +106,9 @@
         <!-- update Modal -->
         <div class="modal fade" id="add" role="dialog"  tabindex="-1" aria-hidden="true" style="display: none;">
             <div class="modal-dialog modal-lg">
-                <!-- Modal content-->
-                <div class="modal-content">
+
+                  <!-- Modal content-->
+                  <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">Add Social Link</h4>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -114,13 +123,13 @@
                                         <label class="col-md-2 text-right col-form-label required" for="social_name">Site Name</label>
                                         <div class="col-md-8">
                                             <select name="social_name" required="" class="form-control">
-                                                <option value="Facebook*fa-facebook-square">Facebook</option>
+                                                <option value="Facebook*fa-facebook">Facebook</option>
                                                 <option value="Twitter*fa-twitter">Twitter  </option>
                                                 <option value="Instagram*fa-instagram">Instagram </option>
                                                 <option value="YouTube*fa-youtube">YouTube </option>
                                                 <option value="Google plus*fa-google-plus-g">Google plus </option>
                                                 <option value="WhatsApp*fa-whatsapp">WhatsApp</option>
-                                                <option value="LinkedIn*fa-linkedin">LinkedIn  </option>
+                                                <option value="LinkedIn*fa-linkedin-in">LinkedIn  </option>
                                                 <option value="Pinterest*fa-pinterest">Pinterest   </option>
                                                 <option value="Viber*fa-viber">Viber</option>
                                                 <option value="Reddit*fa-reddit">Reddit </option>
@@ -164,47 +173,29 @@
                                         <button type="submit" name="submit" value="add" class="btn btn-success"> <i class="fa fa-check"></i> Save</button>
                                         <button type="button" data-dismiss="modal" class="btn btn-inverse">Cancel</button>
                                     </div>
+                                    </div>
+                                   
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+          </div>
+ 
+
         <!-- delete Modal -->
         @include('backend.modal.delete-modal')
 
 @endsection
 @section('js')
     <!-- This is data table -->
-    <script src="{{asset('assets')}}/node_modules/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="{{asset('assets')}}/node_modules/datatables.net-bs4/js/dataTables.responsive.min.js"></script>
-
-
-    <script>
-        $(document).ready(function(){
-         $( "#positionSorting" ).sortable({
-          placeholder : "ui-state-highlight",
-          update  : function(event, ui)
-          {
-
-           var ids = new Array();
-           $('#positionSorting tr').each(function(){
-            ids.push($(this).attr("id"));
-           });
-           $.ajax({
-            url:"{{route('positionSorting')}}",
-            method:"get",
-            data:{ids:ids,table:'socials'},
-            success:function(data)
-            {
-             toastr.success(data)
-            }
-           });
-          }
-         });
-
+    <script src="{{asset('backend/assets')}}/node_modules/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="{{asset('backend/assets')}}/node_modules/datatables.net-bs4/js/dataTables.responsive.min.js"></script>
+       <script>
+        $(function () {
+            $('#myTable').DataTable({"ordering": false});
         });
-    </script>
 
+    </script>
 @endsection

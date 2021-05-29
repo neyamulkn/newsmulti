@@ -101,7 +101,7 @@
                                             <div class="form-group">
                                                 <label for="menu">Menu</label>
                                                 <select name="menu"  required="required" id="menu" class="form-control custom-select">
-                                                    <option></option>
+                                                    <option value="all">All</option>
                                                     <option value="1" {{ ( $data->menu ==1) ? 'selected' : '' }}> Header Top</option>
                                                     <option value="2" {{ ( $data->menu ==2) ? 'selected' : '' }}>Main Menu</option>
                                                     <option value="3" {{ ( $data->menu ==3) ? 'selected' : '' }}>Footer Menu</option>

@@ -2,12 +2,11 @@
 @section('title', 'Profile Update')
 @section('css')
     <link href="{{asset('backend/assets')}}/node_modules/dropify/dist/css/dropify.min.css" rel="stylesheet" type="text/css" />
-
-    <style type="text/css">
-       .dropify-wrapper{
-                height: 130px !important;
-            }
-    </style>
+<style type="text/css">
+   .dropify-wrapper{
+            height: 130px !important;
+        }
+</style>
 @endsection
 @section('content')
         <!-- Page wrapper  -->
@@ -49,28 +48,33 @@
                             <div class="form-group row">
                                 <label class="col-md-1 col-form-label" for="name">Name</label>
                                 <div class="col-md-6">
-                                    <input type="text" value="{{Auth::user()->name}}" placeholder="Enter name" name="name" required="" id="name" class="form-control" >
+                                    <input type="text" value="{{Auth::guard('admin')->user()->name}}" placeholder="Enter name" name="name" required="" id="name" class="form-control" >
                                 </div>
                             </div>
-                            
+                            <div class="form-group row">
+                                <label class="col-md-1 col-form-label" for="username">Username</label>
+                                <div class="col-md-6">
+                                    <input type="text" value="{{Auth::guard('admin')->user()->username}}" placeholder="Enter username" name="username" required="" id="username" class="form-control" >
+                                </div>
+                            </div>
 
                             <div class="form-group row">
-                                <label class="col-md-1 col-form-label" for="phone">Mobile</label>
+                                <label class="col-md-1 col-form-label" for="mobile">Mobile</label>
                                  <div class="col-md-6">
-                                    <input type="text" value="{{Auth::user()->phone}}" placeholder="Enter mobile number" name="phone" required="" id="phone" class="form-control" >
+                                    <input type="text" value="{{Auth::guard('admin')->user()->mobile}}" placeholder="Enter mobile number" name="mobile" required="" id="mobile" class="form-control" >
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label class="col-md-1 col-form-label" for="email">Email</label>
                                  <div class="col-md-6">
-                                    <input type="text" value="{{Auth::user()->email}}" placeholder="Enter email number" name="email" required="" id="email" class="form-control" >
+                                    <input type="text" value="{{Auth::guard('admin')->user()->email}}" placeholder="Enter email number" name="email" required="" id="email" class="form-control" >
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label class="col-md-1 col-form-label dropify_image">Profile Image</label>
                                 <div class="col-md-3">
-                                    <input data-default-file="{{asset('upload/images/users/thumb_image/'.Auth::user()->image)}}" type="file" class="dropify" accept="image/*" data-type='image' data-allowed-file-extensions="jpg jpeg png gif"  data-max-file-size="2M"  name="image" id="input-file-events">
+                                    <input data-default-file="{{asset('upload/images/users/thumb_image/'.Auth::guard('admin')->user()->photo)}}" type="file" class="dropify" accept="image/*" data-type='image' data-allowed-file-extensions="jpg jpeg png gif"  data-max-file-size="2M"  name="phato" id="input-file-events">
                                 </div>
                                
                             </div> 
@@ -92,6 +96,7 @@
     </div>
     <!-- ============================================================== -->
     <!-- End Page wrapper  -->
+
 @endsection
 
 @section('js')

@@ -2,7 +2,7 @@
 
 $section_items = App\Models\HomepageSectionItem::where('section_id', $section->id)->where('status', 1)
     ->with(['newsByCategory' => function ($query) {
-    $query->where('status', '=', 1)->orderBy('id', 'DESC')->limit(9); }, 'category:id,cat_slug_en', 'newsByCategory.image','newsByCategory.subcategoryList:id,subcategory_bd,subcategory_en', 
+    $query->where('status', '=', 'active')->orderBy('id', 'DESC')->limit(9); }, 'category:id,cat_slug_en', 'newsByCategory.image','newsByCategory.subcategoryList:id,subcategory_bd,subcategory_en', 
         'getCategories' => function ($query) {
     $query->where('status', '=', 1)->limit(5); },]);
 
@@ -11,11 +11,11 @@ $section_items = App\Models\HomepageSectionItem::where('section_id', $section->i
     $communications =  DB::table('news')
         ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
         ->limit(7)
-        ->inRandomOrder()->where('news.status', '=', 1)
-       	->where('news.lang', '=', 1)
+        ->inRandomOrder()->where('news.status', '=', 'active')
+       	->where('news.lang', '=', 'bd')
         ->select('news.*', 'media_galleries.source_path', 'media_galleries.title')->get();
 ?>
-
+@if(count($section_items)>0 && count($section_items[0]->newsByCategory)>0)
 <section @if($section->layout_width == 'full') style="background:{{$section->background_color}} url({{asset('upload/images/homepage/'.$section->background_image)}}) no-repeat 50% 50% fixed; background-size: cover;" @endif>
 
 
@@ -49,7 +49,7 @@ $section_items = App\Models\HomepageSectionItem::where('section_id', $section->i
                                 <div class="col-md-7 col-sm-6">
                                     <div class="news-post image-post2">
 									    <div class="post-gallery">
-									        <img src="{{ asset('upload/images/thumb_img_box/'. $section_news->image->source_path)}}" alt="">
+									        <img src="{{ asset('upload/images/thumb_img/'. $section_news->image->source_path)}}" alt="">
 									        <div class="hover-box">
 									        <div class="inner-hover">
 									        <h2><a href="{{route('news_details', $section_news->news_slug)}}">{{Str::limit($section_news->news_title, 45)}}</a></h2>
@@ -118,7 +118,7 @@ $section_items = App\Models\HomepageSectionItem::where('section_id', $section->i
                     <div class="col-md-12">
                         <div class="news-post image-post2">
 						    <div class="post-gallery">
-						        <img src="{{ asset('upload/images/thumb_img_box/'. $communication->source_path)}}" alt="">
+						        <img src="{{ asset('upload/images/thumb_img/'. $communication->source_path)}}" alt="">
 						        <div class="hover-box">
 						        <div class="inner-hover">
 						        <h2><a href="{{route('news_details', $communication->news_slug)}}">{{Str::limit($communication->news_title, 45)}}</a></h2>
@@ -132,7 +132,7 @@ $section_items = App\Models\HomepageSectionItem::where('section_id', $section->i
                 	<div class="col-md-12 col-xs-6">
 					    <ul class="list-posts">
 					        <li>
-					            <img style="" src="{{ asset('upload/images/thumb_img_box/'. $communication->source_path)}}" alt="">
+					            <img style="" src="{{ asset('upload/images/thumb_img/'. $communication->source_path)}}" alt="">
 					            <div class="post-content">
 					                <h2 style=""><a href="{{route('news_details', $communication->news_slug)}}">{{Str::limit($communication->news_title, 45)}}</a></h2>
 					                
@@ -151,3 +151,4 @@ $section_items = App\Models\HomepageSectionItem::where('section_id', $section->i
     </div>@endif
 </section>
 
+@endif

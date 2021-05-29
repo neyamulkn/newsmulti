@@ -14,18 +14,29 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('name');
-            $table->string('username')->unique();
-            $table->string('email')->unique();
-            $table->string('password');
+            $table->id();
             $table->integer('role_id');
-            $table->integer('gender')->nullable();
-            $table->date('birthday')->nullable();
-            $table->char('image', 75)->default('author-image.png');
-            $table->tinyInteger('creator_id');
-            $table->tinyInteger('status');
+            $table->string('name');
+            $table->string('lname')->nullable();
+            $table->string('username')->unique();
+            $table->text('user_dsc')->nullable();
+            $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
+            $table->string('email_verification_token')->nullable();
+            $table->string('mobile')->unique();
+            $table->timestamp('mobile_verified_at')->nullable();
+            $table->string('mobile_verification_token')->nullable();
+            $table->string('password');
+            $table->string('provider', 15)->nullable();
+            $table->string('provider_id', 255)->nullable();
+            $table->decimal('wallet_balance')->default(0.00);
+            $table->integer('gender')->nullable();
+            $table->string('blood', 15)->nullable();
+            $table->date('birthday')->nullable();
+            $table->string('photo', 225)->nullable();
+            $table->timestamp('last_login')->nullable();
+            $table->tinyInteger('created_by')->nullable();
+            $table->tinyInteger('status');
             $table->rememberToken();
             $table->timestamps();
         });

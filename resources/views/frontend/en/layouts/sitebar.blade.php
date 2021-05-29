@@ -4,19 +4,19 @@ $recent_news = DB::table('news')
     ->join('categories', 'news.category', '=', 'categories.id')
     ->leftJoin('sub_categories', 'news.subcategory', '=', 'sub_categories.id')
     ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
-    ->where('news.status', 1)
+    ->where('news.status', 'active')
     ->limit(6)
     ->orderBy('news.id', 'DESC')
-    ->where('news.lang', '=', 2)
+    ->where('news.lang', '=', 'en')
     ->select('news.*','categories.category_en', 'sub_categories.subcategory_en','media_galleries.source_path', 'media_galleries.title')->get();
 
 $popular_news =  DB::table('news')
     ->join('categories', 'news.category', '=', 'categories.id')
     ->leftJoin('sub_categories', 'news.subcategory', '=', 'sub_categories.id')
     ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
-    ->where('news.status', 1)
+    ->where('news.status', 'active')
     ->orderBy('view_counts', 'DESC')
-    ->where('news.lang', '=', 2)
+    ->where('news.lang', '=', 'en')
     ->select('news.*','categories.category_en', 'sub_categories.subcategory_en','media_galleries.source_path')->take(5)->get();
 
 
@@ -103,13 +103,13 @@ $popular_news =  DB::table('news')
             }
 
             if(Session::get('locale')){
-               $get_most_views = $get_most_views->where('news.lang', '=', 2);
+               $get_most_views = $get_most_views->where('news.lang', '=', 'en');
             }else{
-               $get_most_views = $get_most_views->where('news.lang', '=', 1);
+               $get_most_views = $get_most_views->where('news.lang', '=', 'bd');
             }
 
             
-            $get_most_views = $get_most_views->orderBy('news.view_counts', 'DESC')->where('news.status', '=', 1)
+            $get_most_views = $get_most_views->orderBy('news.view_counts', 'DESC')->where('news.status', '=', 'active')
             ->select('news.*','media_galleries.source_path', 'media_galleries.title')->get();
         ?>
         <div class="widget features-slide-widget">

@@ -1,19 +1,20 @@
 <?php  
 
 $section_items = App\Models\HomepageSectionItem::where('section_id', $section->id)->where('status', 1)->with(['newsByCategory' => function ($query) {
-$query->where('status', '=', 1)->orderBy('id', 'desc')->limit(11); }, 'newsByCategory.image', 'newsByCategory.getCategory:id,category_bd,category_en', 'newsByCategory.subcategoryList:id,subcategory_bd,subcategory_en'])->orderBy('position', 'asc')->take(1)->get();
+$query->where('status', '=', 'active')->orderBy('id', 'desc')->limit(11); }, 'newsByCategory.image', 'newsByCategory.getCategory:id,category_bd,category_en', 'newsByCategory.subcategoryList:id,subcategory_bd,subcategory_en'])->orderBy('position', 'asc')->take(1)->get();
 
 $coronas =  DB::table('news')
     ->join('categories', 'news.category', '=', 'categories.id')
     ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
     ->limit(5)
     ->orderBy('news.id', 'desc')
-    ->where('categories.cat_slug_en', 'corona-update')->where('news.status', '=', 1)
-    ->where('news.lang', '=', 1)
+    ->where('categories.cat_slug_en', 'corona-update')->where('news.status', '=', 'active')
+    ->where('news.lang', '=', 'bd')
     ->select('news.*', 'media_galleries.source_path', 'media_galleries.title')->get();
 
 ?>
 
+@if(count($section_items)>0 && count($section_items[0]->newsByCategory)>0)
 <section @if($section->layout_width == 'full') style="background:{{$section->background_color}} url({{asset('upload/images/homepage/'.$section->background_image)}}) no-repeat 50% 50% fixed; background-size: cover;" @endif>
 
 
@@ -37,7 +38,7 @@ $coronas =  DB::table('news')
                                     <div class="news-post standard-post2 ">
                                         <a href="{{route('news_details', $section_news->news_slug)}}">
                                             <div class="post-gallery">
-                                                <img src="{{ asset('upload/images/thumb_img_box/'. $section_news->image->source_path)}}" alt="">
+                                                <img src="{{ asset('upload/images/thumb_img/'. $section_news->image->source_path)}}" alt="">
                                                 @if($section_news->type == 3)
                                                     <a class="play-link" href="{{route('news_details', $section_news->news_slug)}}"><i class="fa fa-play-circle-o"></i></a>
                                                 @elseif($section_news->type == 4)
@@ -104,7 +105,7 @@ $coronas =  DB::table('news')
                         <div class="col-md-12">
                             <ul class="list-posts">
                                 <li style="background: transparent;padding: 6px 0 !important">
-                                    <img style="border-radius: 50%;width: 65px;height: 65px;" src="{{ asset('upload/images/thumb_img_box/'. $corona->source_path)}}" alt="">
+                                    <img style="border-radius: 50%;width: 65px;height: 65px;" src="{{ asset('upload/images/thumb_img/'. $corona->source_path)}}" alt="">
                                     <div class="post-content">
                                         <h2 style=""><a href="{{route('news_details', $corona->news_slug)}}">{{Str::limit($corona->news_title, 45)}}</a></h2>
                                         
@@ -147,4 +148,4 @@ $coronas =  DB::table('news')
         @if($section->layout_width == 'box')
     </div>@endif
 </section>
-
+@endif

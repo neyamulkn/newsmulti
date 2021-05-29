@@ -1,24 +1,19 @@
 <!doctype html>
 <html lang="en" class="no-js">
 
-<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-
-	
-    <?php $setting = App\Models\Setting::first(); ?>
-    @if(Request::is('/'))
-        <title>{{ $setting->title }}</title>
-        <meta itemprop="name" content="{{ $setting->title }}">
-    @else
-        <title>@yield('title')</title>
-    @endif
-
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    @yield('MetaTag')
+    <link rel="icon" href="{{ asset('upload/images/logo/'. config('siteSetting.favicon'))}}" type="image/x-icon">
+    <title>@yield('title')</title>
+	@yield('MetaTag')
+	<!--rss -->
+	<link rel="alternate" type="application/rss+xml" title="বিডি টাইপ RSS" href="{{ route('feed') }}" />
     <script type="application/ld+json">
 	{
 	"@context": "https://schema.org",
-	"name":"Bdtype",
+	"name":"বিডি টাইপ",
 	"@type": "Organization",
 	"url": "{{url('/')}}",
 	"logo": "{{ asset('frontend')}}/images/logo-black.png",
@@ -55,9 +50,7 @@
         }
     </script>
 
-    {!!  $setting->header_text !!}
-
-    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900,400italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700,900,400italic' rel='stylesheet' type='text/css'>
 	<link href="{{ asset('frontend/css/font-awesome/font-awesome.min.css') }}" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="{{asset('frontend/css/bootstrap.min.css') }}" media="screen">
 	<link rel="stylesheet" type="text/css" href="{{asset('frontend/css/jquery.bxslider.css') }}" media="screen">
@@ -70,17 +63,15 @@
 	<link rel="stylesheet" type="text/css" href="{{asset('frontend/css/custom.css') }}" media="screen">
 	<link rel="stylesheet" type="text/css" href="{{asset('frontend/css/leftsidebar-mobile.css') }}" media="screen">
 	<link href="{{asset('frontend/css/search/main.css')}}" rel="stylesheet" />
-	<link rel="icon" href="{{ asset('frontend')}}/images/fevicon.png" type="image/x-icon">
-
+	
 	@yield('css')
 	<style type="text/css">
-		.map img{
-			width: 100%;
-			height: 100%;
-			object-fit: contain;
-		}
-		.ticker{width: 66% !important;}
+		.map img{ width: 100%; height: 100%; object-fit: contain; }	
+		.ticker{width: 67%;}
 	</style>
+	
+	{!! config('siteSetting.google_adsense') !!}
+	
 </head>
 <body>
 
@@ -103,7 +94,7 @@
 	<script type="text/javascript" src="{{ asset('frontend/js/owl.carousel.min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('frontend/js/plugins-scroll.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('frontend/js/script.js') }}"></script>
-    {!!  $setting->footer !!}
+    {!!  config('siteSetting.google_analytics') !!}
 	<script type="text/javascript">
 	function search_bar(src_key){
 

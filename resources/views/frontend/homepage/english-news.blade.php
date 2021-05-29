@@ -4,10 +4,10 @@ $get_english_news = DB::table('news')
     ->join('categories', 'news.category', '=', 'categories.id')
     ->leftJoin('sub_categories', 'news.subcategory', '=', 'sub_categories.id')
     ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
-    ->where('news.breaking_news', 1)
+    // ->where('news.breaking_news', 1)
     ->limit(4)
     ->orderBy('news.id', 'DESC')
-    ->where('news.status', '=', 1)->where('news.lang', '!=', 1)->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
+    ->where('news.status', '=', 'active')->where('news.lang', 'en')->select('news.*', 'categories.category_bd', 'sub_categories.subcategory_bd', 'categories.category_en', 'sub_categories.subcategory_en', 'media_galleries.source_path', 'media_galleries.title')->get();
 ?>
 
 @if(count($get_english_news)>0)
@@ -27,7 +27,7 @@ $get_english_news = DB::table('news')
                     <div class="col-md-3 col-xs-6">
                         <div class="news-post standard-post2" style="border: 2px solid red;border-radius: 5px;">
                             <div class="post-gallery">
-                                <img src="{{ asset('upload/images/thumb_img_box/'. $section_news->source_path)}}" alt="">
+                                <img src="{{ asset('upload/images/thumb_img/'. $section_news->source_path)}}" alt="">
                             </div>
                             <div style="height: 62px;background:#fff;padding: 5px;">
                             <a style="color: {{$section->text_color}};font-size: 14px;" href="{{route('news_details', $section_news->news_slug)}}">

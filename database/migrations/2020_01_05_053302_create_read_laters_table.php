@@ -14,7 +14,7 @@ class CreateReadLatersTable extends Migration
     public function up()
     {
         Schema::create('read_laters', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->integer('news_id');
             $table->integer('user_id');
             $table->timestamps();

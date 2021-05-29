@@ -100,9 +100,9 @@
                                                         <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                             <i class="ti-settings"></i>
                                                         </button>
-                                                        <div class="dropdown-menu">
+                                                        <div class=" dropdown-menu">
                                                             @if($data->is_default != 1)
-                                                            <a title="Add item under this section" class="dropdown-item" class="btn btn-primary btn-sm" href="{{route('admin.homepageSectionItem', $data->slug)}}"><i class="ti-pin-alt" aria-hidden="true"></i> Manage {{$data->section_type}}</a>
+                                                            <a title="Add item under this section"  class="btn btn-primary btn-sm" href="{{route('admin.homepageSectionItem', $data->slug)}}"><i class="ti-pin-alt" aria-hidden="true"></i> Manage {{$data->section_type}}</a>
                                                             @endif
                                                             <button  class="dropdown-item" type="button" onclick="edit('{{$data->id}}')"  data-toggle="modal" data-target="#edit" class="btn btn-info btn-sm"><i class="ti-pencil" aria-hidden="true"></i> Edit</button>
                                                             @if($data->is_default != 1)

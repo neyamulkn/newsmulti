@@ -1,30 +1,22 @@
 <?php
+use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
+define('ADMIN', 1);
+define('REPORTER', 2);
+define('USER', 3);
+define('STAFF', 4);
+
 Route::get('404', 'HomeController@error')->name('404');
 Route::get('/feed', 'HomeController@feed')->name('feed');
-Route::get('sitemap.xml','SitemapController@index');
-Route::get('sitemap.xml/article','SitemapController@articles');
-Route::get('sitemap.xml/category','SitemapController@categories');
+Route::get('sitemap','SitemapController@index');
+Route::get('sitemap.xml','SitemapController@index')->name('sitemap');
+Route::get('sitemap.xml/pages','SitemapController@pages');
+Route::get('sitemap.xml/articles','SitemapController@articles');
+Route::get('sitemap.xml/categories','SitemapController@categories');
+
 
 Route::get('notifications', 'NotificationController@notifications')->name('notifications');
 Route::get('notifications/read/{id}', 'NotificationController@readNotify')->name('readNotify');
-
-//ajax route
-Route::get('get_subcategoryBy_id/{id}', 'AjaxController@get_subcategoryBy_id')->name('get_subcategory');
-
-Route::get('get_district/{id}', 'AjaxController@get_district')->name('get_district');
-
-Route::get('get_upzilla/{id}', 'AjaxController@get_upzilla')->name('get_upzilla');
 
 
 //deshjure search route  // for home page and sitebar
@@ -33,16 +25,13 @@ Route::get('deshjure_upzilla/{id}', 'AjaxController@deshjure_upzilla')->name('de
 
 Route::get('news/image/{path}', 'HomeController@watermark')->name('watermark');
 
-
-
-
 Route::get('lang/{locale}', function ($locale){
 	if($locale == 'en'){
 		Session::put('locale', $locale);
+		return redirect($locale);
 	}else{
 		Session::forget('locale');
 	}
-   
     return redirect('/');
 });
 
@@ -54,9 +43,8 @@ Route::post('user/registration', 'UserController@registration')->name('registrat
 
 Auth::routes();
 
-include('adminRoutes.php');
-
 Route::get('/', 'HomeController@index')->name('home');
+Route::get('en', 'HomeController@indexEn')->name('indexEn');
 Route::get('kalamadmin', 'UserController@login')->name('admin');
 Route::post('registrationAndComment', 'CommentController@registrationAndComment')->name('registrationAndComment');
 Route::post('userlogin', 'UserController@userlogin')->name('userlogin');
@@ -75,25 +63,12 @@ Route::get('video/watch/{slug}', 'HomeController@video_watch')->name('video.watc
 
 // news details page
 Route::get('article/{slug}', 'HomeController@news_details')->name('news_details');
-Route::get('artical/{slug}', 'HomeController@news_details')->name('news_details');
-Route::get('news/readLater', 'UserController@readLater')->name('readLater')->middleware('auth');
-Route::get('news/read-later/{username}', 'UserController@viewReadLater')->name('viewReadLater');
-Route::get('comment/insert', 'CommentController@comment_insert')->name('comment_insert');
-Route::post('comment/reply/{id}', 'CommentController@comment_reply')->name('comment_reply');
 Route::get('comments/{slug}', 'CommentController@comments')->name('comments');
 
-Route::get('comment/delete', 'CommentController@commentDelete')->name('commentDelete');
-
-
-
+Route::get('repoter/profile/{username}', 'HomeController@reporterPublicProfile')->name('reporter.publicProfile');
+Route::get('user/profile/{username}', 'HomeController@userPublicProfile')->name('user.publicProfile');
 Route::get('{page}', 'HomeController@page')->name('page');
-
-Route::get('repoter/{username}', 'HomeController@reporter_details')->name('reporter_details');
-
-Route::get('profile/{username}', 'HomeController@user_profile')->name('user_profile');
-Route::post('profile/update', 'UserController@update_profile')->name('update_profile');
 Route::get('reporter/request', 'UserController@request_reporter')->name('request_reporter');
-
 Route::post('reporter/request', 'UserController@insert_request_reporter')->name('request_reporter');
 
 Route::get('social-login/redirect/{provider}', 'SocialLoginController@redirectToProvider')->name('social.login');

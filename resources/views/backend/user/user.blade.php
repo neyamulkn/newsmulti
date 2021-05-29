@@ -1,5 +1,5 @@
 @extends('backend.layouts.master')
-@section('title', 'user list')
+@section('title', 'User list')
 @section('css')
 
     <link href="{{asset('backend/assets')}}/node_modules/dropify/dist/css/dropify.min.css" rel="stylesheet" type="text/css" />
@@ -28,7 +28,7 @@
             <!-- ============================================================== -->
             <div class="row page-titles">
                 <div class="col-md-5 align-self-center">
-                    <h4 class="text-themecolor">user List</h4>
+                    <h4 class="text-themecolor">User List</h4>
                 </div>
                 <div class="col-md-7 align-self-center text-right">
                     <div class="d-flex justify-content-end align-items-center">
@@ -118,6 +118,7 @@
                                             <th>User Since</th>
                                             <th>Mobile</th>
                                             <th>Email</th>
+                                             <th>Activation</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
@@ -125,14 +126,24 @@
                                     <tbody>
                                         @foreach($users as $user)
                                         <tr id="item{{$user->id}}">
-                                            <td><img src="{{asset('upload/images/users/thumb_image/'. $user->image)}}" width="50"> {{$user->name}}</td>
+                                            <td><img src="{{asset('upload/images/users/thumb_image/'. $user->photo)}}" width="50"> {{$user->name}}</td>
                                             <td>{{\Carbon\Carbon::parse($user->created_at)->format('d M, Y')}}</td>
-                                            <td>{{$user->phone}}</td>
+                                            <td>{{$user->mobile}}</td>
                                             <td>{{$user->email}}</td>
                                             <td>
                                                 <div class="bt-switch">
-                                                    <input  onchange="satusActiveDeactive('users', '{{$user->id}}')" type="checkbox" {{($user->status == 1) ? 'checked' : ''}} data-on-color="success" data-off-color="danger" data-on-text="Active" data-off-text="Deactive"> 
+                                                    <input  onchange="satusActiveDeactive('users', '{{$user->id}}')" type="checkbox" {{($user->status == 'active') ? 'checked' : ''}} data-on-color="success" data-off-color="danger" data-on-text="Active" data-off-text="Deactive"> 
                                                 </div>
+                                            </td>
+
+                                            <td>
+                                                @if($user->status == 'active')
+                                                     <span class="label label-success">Active </span>
+                                                @elseif($user->status == 'pending')
+                                                    <span class="label label-warning">Pending </span>
+                                                @else
+                                                    <span class="label label-info"> {{$user->status}} </span>
+                                                @endif
                                             </td>
                                           
                                             <td>
@@ -142,9 +153,9 @@
                                                     </button>
                                                     <div class="dropdown-menu">
                                                        
-                                                        <a class="dropdown-item" title="View user Profile" data-toggle="tooltip" href="{{ route('user_profile', $user->username) }}"><i class="ti-eye"></i> View Profile</a>
+                                                        <a class="dropdown-item" title="View user Profile" data-toggle="tooltip" href="{{ route('admin.userProfile', $user->username) }}"><i class="ti-eye"></i> View Profile</a>
 
-                                                        <!-- <a class="dropdown-item" target="_blank" title="Secret login in the user pannel" data-toggle="tooltip" href="{{route('admin.userSecretLogin', encrypt($user->id))}}"><i class="ti-lock"></i> Secret Login</a> -->
+                                                        <a class="dropdown-item" target="_blank" title="Secret login in the user pannel" data-toggle="tooltip" href="{{route('admin.userSecretLogin', encrypt($user->id))}}"><i class="ti-lock"></i> Secret Login</a>
 
                                                     
                                                       

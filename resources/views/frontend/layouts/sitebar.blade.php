@@ -4,18 +4,18 @@ $recent_news = DB::table('news')
     ->join('categories', 'news.category', '=', 'categories.id')
     ->leftJoin('sub_categories', 'news.subcategory', '=', 'sub_categories.id')
     ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
-    ->where('news.status', 1)
+    ->where('news.status', 'active')
     ->limit(6)
     ->orderBy('news.id', 'DESC')
-    ->where('news.lang', 1)
+    ->where('news.lang', 'bd')
     ->select('news.*','categories.category_bd', 'sub_categories.subcategory_bd','media_galleries.source_path', 'media_galleries.title')->get();
 
 $popular_news =  DB::table('news')
     ->join('categories', 'news.category', '=', 'categories.id')
     ->leftJoin('sub_categories', 'news.subcategory', '=', 'sub_categories.id')
     ->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
-    ->where('news.status', 1)
-    ->where('news.lang', 1)
+    ->where('news.status', 'active')
+    ->where('news.lang', 'bd')
     ->orderBy('view_counts', 'DESC')
     ->select('news.*','categories.category_bd', 'sub_categories.subcategory_bd','media_galleries.source_path')->take(5)->get();
 

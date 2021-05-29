@@ -1,5 +1,5 @@
 <figure>
-  <img class="image" src="{{asset('upload/images/thumb_img_box/'.$path)}}" alt="image" />
+  <img class="image" src="{{asset('upload/images/news/'.$path)}}" alt="image" />
 </figure>
 <script type="text/javascript" src="{{asset('frontend/js')}}/jquery.min.js"></script>
 <script type="text/javascript" src="{{asset('frontend/js')}}/jquery.watermark.min.js"></script>

@@ -6,14 +6,7 @@
         <changefreq>daily</changefreq>
         <priority>0.9</priority>
     </url>
-	@foreach ($pages as $page)
-        <url>
-            <loc>{{ route('page', $page->page_slug) }}</loc>
-            <lastmod>{{ $page->updated_at->tz('UTC')->toAtomString() }}</lastmod>
-            <changefreq>monthly</changefreq>
-            <priority>0.9</priority>
-        </url>
-    @endforeach
+	
     @foreach ($categories as $category)
         <url>
             <loc>{{ route('category', $category->cat_slug_en) }}</loc>

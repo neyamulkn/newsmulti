@@ -5,7 +5,7 @@
 
     <style type="text/css">
         .dropify_image{
-            position: absolute;top: -12px!important;left: 12px !important; z-index: 9; background:#fff!important;padding: 3px;
+            position: absolute;top: 0px!important;left: 12px !important; z-index: 9; background:#fff!important;padding: 3px;
         }
         .dropify-wrapper{
             width: 300px !important;
@@ -43,54 +43,52 @@
                 <!-- Start Page Content -->
                 <!-- ============================================================== -->
                 <div class="row">
-                    <div class="container">
-                        <div class="col-md-12">
-                            <div class="card card-body">
-                                <form action="{{route('logoSettingUpdate', $setting->id)}}" enctype="multipart/form-data" method="post" id="generalSetting">
-                                @csrf
-                            
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group"> 
-                                            <label class="dropify_image">Main Logo</label>
-                                            <input type="file" data-default-file="{{asset('upload/images/logo/'.$setting->logo)}}" class="dropify" accept="image/*" data-type='image' data-allowed-file-extensions="jpg png gif"  data-max-file-size="2M"  name="logo" id="input-file-events">
+                    <div class="col-md-12">
+                        <div class="card card-body">
+                            <div class="title_head"> Set Logo </div>
+                            <form action="{{route('logoSettingUpdate', $setting->id)}}" enctype="multipart/form-data" method="post" id="generalSetting">
+                            @csrf
+                        
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group"> 
+                                        <label class="dropify_image">Main Logo</label>
+                                        <input type="file" data-default-file="{{asset('upload/images/logo/'.$setting->logo)}}" class="dropify" accept="image/*" data-type='image' data-allowed-file-extensions="jpg png gif"  data-max-file-size="2M"  name="logo" id="input-file-events">
 
-                                        </div>
-                                        @if ($errors->has('logo'))
-                                            <span class="invalid-feedback" role="alert">
-                                                {{ $errors->first('logo') }}
-                                            </span>
-                                        @endif
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group"> 
-                                            <label class="dropify_image">Footer Logo</label>
-                                            <input type="file" class="dropify" accept="image/*" data-type='image' data-default-file="{{asset('upload/images/logo/'.$setting->footer_logo)}}" data-allowed-file-extensions="jpg png gif"  data-max-file-size="2M"  name="footer_logo" id="input-file-events">
-                                        </div>
-                                        @if ($errors->has('footer_logo'))
-                                            <span class="invalid-feedback" role="alert">
-                                                {{ $errors->first('footer_logo') }}
-                                            </span>
-                                        @endif
+                                    @if ($errors->has('logo'))
+                                        <span class="invalid-feedback" role="alert">
+                                            {{ $errors->first('logo') }}
+                                        </span>
+                                    @endif
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group"> 
+                                        <label class="dropify_image">Invoice Logo</label>
+                                        <input type="file" class="dropify" accept="image/*" data-type='image' data-default-file="{{asset('upload/images/logo/'.$setting->footer_logo)}}" data-allowed-file-extensions="jpg png gif"  data-max-file-size="2M"  name="footer_logo" id="input-file-events">
                                     </div>
-
-                                    <div class="col-md-4">
-                                        <div class="form-group"> 
-                                            <label class="dropify_image">Favicon</label>
-                                            <input type="file" class="dropify" accept="image/*" data-type='image' data-default-file="{{asset('upload/images/logo/'.$setting->favicon)}}" data-allowed-file-extensions="jpg png gif"  data-max-file-size="2M"  name="favicon" id="input-file-events">
-                                        </div>
-                                        @if ($errors->has('favicon'))
-                                            <span class="invalid-feedback" role="alert">
-                                                {{ $errors->first('favicon') }}
-                                            </span>
-                                        @endif
+                                    @if ($errors->has('footer_logo'))
+                                        <span class="invalid-feedback" role="alert">
+                                            {{ $errors->first('footer_logo') }}
+                                        </span>
+                                    @endif
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group"> 
+                                        <label class="dropify_image">Favicon</label>
+                                        <input type="file" class="dropify" accept="image/*" data-type='image' data-default-file="{{asset('upload/images/logo/'.$setting->favicon)}}" data-allowed-file-extensions="jpg png gif"  data-max-file-size="2M"  name="favicon" id="input-file-events">
                                     </div>
-                                    <div class="col-md-12">
-                                        <hr>
-                                        <div class="form-actions pull-right">
-                                            <button type="submit"  name="submit" value="save" class="btn btn-success"> <i class="fa fa-save"></i> Update Logo</button>
-                                           
-                                        </div>
+                                    @if ($errors->has('favicon'))
+                                        <span class="invalid-feedback" role="alert">
+                                            {{ $errors->first('favicon') }}
+                                        </span>
+                                    @endif
+                                </div>
+                                <div class="col-md-12">
+                                    <hr>
+                                    <div class="form-actions pull-right">
+                                        <button type="submit"  name="submit" value="save" class="btn btn-success"> <i class="fa fa-save"></i> Update Logo</button>
+                                       
                                     </div>
                                 </div>
                             </div>

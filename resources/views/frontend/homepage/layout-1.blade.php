@@ -5,7 +5,7 @@ $section_items = App\Models\HomepageSectionItem::where('section_id', $section->i
 
 if($section->section_type == 'category'){
     $section_items->with(['newsByCategory' => function ($query) {
-    $query->where('status', '=', 1)->orderBy('id', 'desc'); }, 'newsByCategory.image', 'newsByCategory.getCategory:id,category_bd,category_en', 'newsByCategory.subcategoryList:id,subcategory_bd,subcategory_en']);
+    $query->where('status', '=', 'active')->orderBy('id', 'desc'); }, 'newsByCategory.image', 'newsByCategory.getCategory:id,category_bd,category_en', 'newsByCategory.subcategoryList:id,subcategory_bd,subcategory_en']);
 }   
 
 $section_items = $section_items->orderBy('position', 'asc')->get();
@@ -35,7 +35,7 @@ $section_items = $section_items->orderBy('position', 'asc')->get();
                     <div class="col-md-7">
                         <div class="news-post image-post2">
                             <div class="post-gallery">
-                                <img src="{{ asset('upload/images/thumb_img_box/'. $section_news->image->source_path)}}"  alt="">
+                                <img src="{{ asset('upload/images/thumb_img/'. $section_news->image->source_path)}}"  alt="">
                                 <div class="hover-box">
                                     @if($section_news->type == 3)
                                         <a class="play-link" href="{{route('news_details', $section_news->news_slug)}}"><i class="fa fa-play-circle-o"></i></a>

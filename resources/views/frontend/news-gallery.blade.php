@@ -37,9 +37,10 @@ function banglaDate($date){
         	<div class="single-post-box wide-version">
 			<div class="article-inpost">
         	<?php $section = 1; ?>
+        	
         	@foreach($categories as $category)
         		<?php $galleries = DB::table('news')
-        			->join('categories', 'news.category', '=', 'categories.id')
+        			->leftJoin('categories', 'news.category', '=', 'categories.id')
         			->leftJoin('media_galleries', 'news.thumb_image', '=', 'media_galleries.id')
         			->where('news.category', $category->id)
         			->where('news.type', 2)
@@ -60,7 +61,7 @@ function banglaDate($date){
 								<div class="image-place">
 									<img src="{{ asset('upload/images/thumb_img/'. $gallery->source_path)}}" alt="">
 									<div class="hover-image">
-										<a class="zoom" href="{{ asset('upload/images/'. $gallery->source_path)}}"><i class="fa fa-arrows-alt"></i></a>
+										<a class="zoom" href="{{ asset('upload/images/news/'. $gallery->source_path)}}"><i class="fa fa-arrows-alt"></i></a>
 									</div>
 								</div>
 								<div class="hover-box">
@@ -76,7 +77,7 @@ function banglaDate($date){
 								<div class="image-place">
 									<img src="{{ asset('upload/images/thumb_img/'. $gallery->source_path)}}" alt="">
 									<div class="hover-image">
-										<a class="zoom" href="{{ asset('upload/images/'. $gallery->source_path)}}"><i class="fa fa-arrows-alt"></i></a>
+										<a class="zoom" href="{{ asset('upload/images/news/'. $gallery->source_path)}}"><i class="fa fa-arrows-alt"></i></a>
 									</div>
 								</div>
 								<div class="hover-box">

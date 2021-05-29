@@ -17,7 +17,7 @@ class CreatePollQuestionAnsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('poll_id');
             $table->string('option');
-            $table->string('ans')->nullable();
+            $table->string('votes')->nullable();
             $table->foreign('poll_id')->references('id')->on('polls')->onDelete('cascade');
             $table->timestamps();
         });
